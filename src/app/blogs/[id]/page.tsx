@@ -1,33 +1,53 @@
-import React from "react";
+"use client";
 
-type Props = {
-  params: { id: string };
+import React, { useEffect, useState } from "react";
+
+type Blog = {
+  _id: string;
+  title: string;
+  description: string;
+  imagePath: string;
+  authorName: string;
+  authorImage: string;
+  createdAt: string;
+  category: string;
 };
 
-// Helper to get the base URL
-function getBaseUrl() {
-  if (typeof window !== "undefined") return ""; // In browser
-  return process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
-}
+const Page = ({ params }: { params: { id: string } }) => {
+  const [blog, setBlog] = useState<Blog | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-// Function to fetch the blog data based on its ID
-async function getBlog(id: string) {
-  const res = await fetch(`${getBaseUrl()}/api/blog?id=${id}`, {
-    cache: "no-store", // Optional: prevents caching
-  });
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        // Get ID from params
+        const { id } = await Promise.resolve(params);
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch blog");
-  }
+        const res = await fetch(`/api/blog/${id}`, { cache: "no-store" });
+        const { success, data, message } = await res.json();
 
-  return res.json();
-}
+        if (!success) {
+          setError(message || "Failed to fetch blog");
+          return;
+        }
 
-const Page = async ({ params }: Props) => {
-  // Fetch the blog data based on the ID from the URL
-  const blog = await getBlog(params.id);
+        setBlog(data);
+      } catch (error) {
+        console.error("Error fetching blog:", error);
+        setError("Failed to load blog post");
+      }
+    };
+
+    fetchBlog();
+  }, [params]); // Use params as dependency
+
+  if (error)
+    return <div className="text-center p-8 text-red-500">Error: {error}</div>;
+
+  if (!blog)
+    return (
+      <div className="text-center p-8 animate-pulse">Loading blog post...</div>
+    );
 
   const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -36,43 +56,46 @@ const Page = async ({ params }: Props) => {
   });
 
   return (
-    <div className="flex flex-col items-center p-8">
-      {/* Blog Image */}
-      <div className="w-full max-w-3xl mb-8">
+    <div className="flex flex-col items-center p-8 max-w-7xl mx-auto">
+      <div className="w-full aspect-video mb-8">
         <img
           src={blog.imagePath}
           alt={blog.title}
-          className="h-96 w-full object-cover rounded-lg"
+          className="w-full h-full object-cover rounded-xl shadow-lg"
+          loading="lazy"
         />
       </div>
 
-      {/* Title */}
-      <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
+      <h1 className="text-4xl font-bold mb-4 text-center">{blog.title}</h1>
 
-      {/* Author and Date */}
-      <div className="flex items-center space-x-4 mb-6">
+      <div className="flex items-center gap-4 mb-6">
         <img
           src={blog.authorImage}
           alt={blog.authorName}
           className="w-12 h-12 rounded-full object-cover"
+          loading="lazy"
         />
-        <div className="text-gray-600">
-          <p className="font-semibold">{blog.authorName}</p>
-          <p className="text-sm">{formattedDate}</p>
+        <div>
+          <p className="font-semibold text-gray-800">{blog.authorName}</p>
+          <p className="text-sm text-gray-500">{formattedDate}</p>
         </div>
       </div>
 
-      {/* Category */}
       <div className="mb-6">
-        <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-2.5 py-0.5 rounded">
+        <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
           {blog.category}
         </span>
       </div>
 
-      {/* Full Description */}
-      <p className="max-w-2xl text-center text-gray-700 leading-relaxed">
-        {blog.description}
-      </p>
+      <article className="prose lg:prose-xl max-w-4xl w-full">
+        <div className="text-gray-600 leading-relaxed">
+          {blog.description.split("\n").map((para, index) => (
+            <p key={index} className="mb-4">
+              {para}
+            </p>
+          ))}
+        </div>
+      </article>
     </div>
   );
 };

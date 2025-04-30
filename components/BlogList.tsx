@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import BlogItem from "./Blogitem"; // Assuming BlogItem is in the same folder
+import BlogItem from "./Blogitem";
 
 type Blog = {
   _id: string;
@@ -10,39 +10,58 @@ type Blog = {
   imagePath: string;
   authorName: string;
   authorImage: string;
-  createdAt: string; // assuming this is an ISO date string
+  createdAt: string;
 };
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
+        setLoading(true);
         const response = await fetch("/api/blog");
-        const data = await response.json();
-        console.log("Fetched blogs data:", data);
 
-        // Check if the API sends { blogs: [...] } or just [...]
-        if (Array.isArray(data)) {
-          setBlogs(data); // Direct array
-        } else if (Array.isArray(data.blogs)) {
-          setBlogs(data.blogs); // Wrapped in { blogs: [...] }
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data)) {
+          setBlogs(result.data);
         } else {
-          console.error("Unexpected data format:", data);
+          setError("Invalid data format received from server");
+          console.error("Unexpected data format:", result);
         }
       } catch (error) {
+        setError(
+          error instanceof Error ? error.message : "Failed to load blogs"
+        );
         console.error("Error fetching blogs:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchBlogs();
   }, []);
 
+  if (loading) {
+    return <div className="text-center p-8">Loading blogs...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center p-8 text-red-500">{error}</div>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {Array.isArray(blogs) &&
-        blogs.map((blog) => <BlogItem key={blog._id} blog={blog} />)}
+      {blogs.map((blog) => (
+        <BlogItem key={blog._id} blog={blog} />
+      ))}
     </div>
   );
 };

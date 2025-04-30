@@ -5,30 +5,40 @@ import BlogModel from "../../../../lib/models/blogmodel";
 import fs from "fs";
 import path from "path";
 
-// ===== POST: Create a New Blog =====
 export async function POST(request: Request) {
   try {
     const session = await getServerSession();
-    if (!session) {
-      return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
+    if (!session?.user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+          errorCode: "UNAUTHORIZED",
+        },
+        { status: 401 }
+      );
     }
 
     await connectDB();
 
     const formData = await request.formData();
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
-    const category = formData.get("category") as string;
-    const image = formData.get("image") as Blob;
+    const title = formData.get("title")?.toString() || "";
+    const description = formData.get("description")?.toString() || "";
+    const category = formData.get("category")?.toString() || "";
+    const image = formData.get("image") as Blob | null;
 
     if (!title || !description || !category || !image) {
       return NextResponse.json(
-        { msg: "Missing required fields" },
+        {
+          success: false,
+          message: "Missing required fields",
+          errorCode: "MISSING_FIELDS",
+        },
         { status: 400 }
       );
     }
 
-    // Save image to /public/uploads
+    // Image handling
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
@@ -39,56 +49,64 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await image.arrayBuffer());
     fs.writeFileSync(filePath, buffer);
 
-    const relativeImagePath = `/uploads/${uniqueFileName}`;
-
-    // Create a new blog entry
+    // Create blog
     const newBlog = new BlogModel({
       title,
       description,
       category,
-      authorName: session.user?.name || "Unknown",
-      authorImage: session.user?.image || "",
-      imagePath: relativeImagePath,
+      authorName: session.user.name || "Anonymous",
+      authorImage: session.user.image || "",
+      imagePath: `/uploads/${uniqueFileName}`,
     });
 
     await newBlog.save();
 
     return NextResponse.json({
-      msg: "Blog created successfully!",
-      blogData: newBlog,
+      success: true,
+      data: {
+        ...newBlog.toObject(),
+        _id: newBlog._id.toString(),
+      },
     });
   } catch (error) {
     console.error("Error creating blog:", error);
-    return NextResponse.json({ msg: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+        errorCode: "SERVER_ERROR",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
 
-// ===== GET: Fetch All Blogs or Fetch a Single Blog by ID =====
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await connectDB();
 
-    // Check if there's an 'id' query parameter
-    const url = new URL(request.url);
-    const id = url.searchParams.get("id");
-
-    if (id) {
-      // Fetch a single blog by its ID
-      const blog = await BlogModel.findById(id);
-      if (!blog) {
-        return NextResponse.json({ msg: "Blog not found" }, { status: 404 });
-      }
-      return NextResponse.json(blog);
-    }
-
-    // Fetch all blogs if no 'id' parameter is provided
-    const blogs = await BlogModel.find().sort({ createdAt: -1 });
+    const blogs = (await BlogModel.find()
+      .sort({ createdAt: -1 })
+      .lean()) as Array<{ _id: any; [key: string]: any }>;
 
     return NextResponse.json({
-      blogs, // Return wrapped inside { blogs: [...] }
+      success: true,
+      data: blogs.map((blog) => ({
+        ...blog,
+        _id: blog._id.toString(),
+      })),
     });
   } catch (error) {
     console.error("Error fetching blogs:", error);
-    return NextResponse.json({ msg: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+        errorCode: "SERVER_ERROR",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }

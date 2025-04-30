@@ -17,7 +17,7 @@ export const Navbar = () => {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className=" border-gray-200 bg-black  relative z-10 ">
+    <nav className=" border-gray-200 bg-black  relative z-10  ">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
           href="/"
@@ -48,7 +48,7 @@ export const Navbar = () => {
               </button>
               {/* Dropdown menu */}
               {isDropdownOpen && (
-                <div className="absolute top-14 right-0 mt-2 w-48  divide-y divide-gray-100 rounded-lg shadow-lg bg-gray-700 dark:divide-gray-600">
+                <div className="absolute top-14 right-4 mt-2 w-55  divide-y divide-gray-100 rounded-lg shadow-lg bg-gray-700 dark:divide-gray-600 ">
                   <div className="px-4 py-3">
                     <span className="block text-sm text-transparent dark:text-white">
                       {session.user?.name}
@@ -60,7 +60,7 @@ export const Navbar = () => {
                   <ul className="py-2">
                     <li>
                       <a
-                        href="dashboard"
+                        href="profile"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                       >
                         Profile
@@ -87,7 +87,7 @@ export const Navbar = () => {
                 onClick={() => signIn("google")}
                 className=" rounded-lg  px-3 py-1 bg-rose-900 text-white hover:bg-rose-500  transition-all duration-200 font-poppins"
               >
-                Log in
+                Sign in
               </button>
             </div>
           )}
