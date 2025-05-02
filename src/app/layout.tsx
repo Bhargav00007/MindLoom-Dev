@@ -41,7 +41,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-        <ToastContainer theme="dark" />
+        <ToastContainer position="top-right" theme="dark" />
       </body>
     </html>
   );

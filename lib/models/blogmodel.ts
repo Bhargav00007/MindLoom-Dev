@@ -25,13 +25,16 @@ const BlogSchema = new Schema(
       required: [true, "Author image is required"],
     },
     imagePath: {
-      // ✅ Corrected to match backend
       type: String,
       required: [true, "Image path is required"],
     },
     date: {
       type: Date,
       default: Date.now,
+    },
+    likes: {
+      type: [String],
+      default: [],
     },
   },
   { timestamps: true }

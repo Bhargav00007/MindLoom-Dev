@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import BlogLikeButton from "./BlogLikeButton";
 
 type Props = {
   blog: {
@@ -9,7 +10,8 @@ type Props = {
     imagePath: string;
     authorName: string;
     authorImage: string;
-    createdAt: string; // assuming this is an ISO date string from MongoDB
+    createdAt: string;
+    likes?: string[]; // 👈 Make sure this is passed from backend
   };
 };
 
@@ -18,37 +20,43 @@ const BlogItem = ({ blog }: Props) => {
     return null;
   }
 
-  // Format the createdAt date nicely
   const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
 
+  const handleLikeButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the click event from propagating to the parent div
+  };
+
+  const handleReadMoreClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the click event from propagating to the parent div
+  };
+
   return (
-    <Link href={`/blogs/${blog._id}`}>
-      <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white cursor-pointer hover:shadow-xl transition">
-        {/* Blog Image */}
-        <div className="h-48 bg-gray-200 flex items-center justify-center">
-          <img
-            src={blog.imagePath}
-            alt={blog.title}
-            className="h-full w-full object-cover"
-          />
-        </div>
+    <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white cursor-pointer hover:shadow-xl transition">
+      {/* Blog Image */}
+      <div className="h-48 bg-gray-200 flex items-center justify-center">
+        <img
+          src={blog.imagePath}
+          alt={blog.title}
+          className="h-full w-full object-cover"
+        />
+      </div>
 
-        {/* Content */}
-        <div className="p-4">
-          {/* Title */}
-          <h2 className="text-xl font-bold mb-2">{blog.title}</h2>
-          <p className="text-gray-600 mb-4">
-            {blog.description.length > 100
-              ? `${blog.description.slice(0, 100)}...`
-              : blog.description}
-          </p>
+      {/* Content */}
+      <div className="p-4">
+        <h2 className="text-xl font-bold mb-2">{blog.title}</h2>
+        <p className="text-gray-600 mb-4">
+          {blog.description.length > 100
+            ? `${blog.description.slice(0, 100)}...`
+            : blog.description}
+        </p>
 
-          {/* Author Info */}
-          <div className="flex items-center mb-4">
+        {/* Author Info */}
+        <div className="flex items-center mb-4 justify-between">
+          <div className="flex items-center">
             <img
               src={blog.authorImage}
               alt={blog.authorName}
@@ -60,16 +68,28 @@ const BlogItem = ({ blog }: Props) => {
             </div>
           </div>
 
-          {/* Description */}
+          {/* ❤️ Like Button */}
+          <div onClick={handleLikeButtonClick}>
+            <BlogLikeButton
+              blogId={blog._id}
+              initialLiked={false} // Set to true if liked by this user (optional improvement)
+              initialLikeCount={blog.likes?.length || 0}
+            />
+          </div>
+        </div>
 
-          {/* Read More */}
-          <div className="text-blue-500 flex items-center">
+        {/* Read More */}
+        <Link href={`/blogs/${blog._id}`} passHref>
+          <div
+            className="text-blue-500 flex items-center"
+            onClick={handleReadMoreClick} // Stop propagation for the "Read More" link click
+          >
             <span>Read more</span>
             <span className="ml-1">→</span>
           </div>
-        </div>
+        </Link>
       </div>
-    </Link>
+    </div>
   );
 };
 
