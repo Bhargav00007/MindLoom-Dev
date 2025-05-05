@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 type Blog = {
@@ -13,15 +14,15 @@ type Blog = {
   category: string;
 };
 
-const Page = ({ params }: { params: { id: string } }) => {
+const Page = () => {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const params = useParams();
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        // Get ID from params
-        const { id } = await Promise.resolve(params);
+        const { id } = params;
 
         const res = await fetch(`/api/blog/${id}`, { cache: "no-store" });
         const { success, data, message } = await res.json();

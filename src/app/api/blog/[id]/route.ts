@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import connectDB from "../../../../../lib/config/db";
 import BlogModel from "../../../../../lib/models/blogmodel";
 import { isValidObjectId } from "mongoose";
-import { FlattenMaps } from "mongoose";
 
-interface BlogDocument {
+// Define strict response type
+type BlogDocument = {
   _id: string;
   title: string;
   description: string;
@@ -14,25 +14,33 @@ interface BlogDocument {
   createdAt: Date;
   category: string;
   __v: number;
-}
+  // Add other fields as needed
+};
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request) {
   try {
-    const { id } = await Promise.resolve(params);
+    await connectDB();
 
-    if (!isValidObjectId(id)) {
+    // Extract ID from URL
+    const pathSegments = new URL(request.url).pathname.split("/");
+    const blogId = pathSegments[3];
+
+    if (!blogId) {
+      return NextResponse.json(
+        { success: false, message: "Missing blog ID" },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidObjectId(blogId)) {
       return NextResponse.json(
         { success: false, message: "Invalid blog ID format" },
         { status: 400 }
       );
     }
 
-    await connectDB();
-
-    const blog = await BlogModel.findById(id).lean().exec();
+    // Use explicit typing with lean()
+    const blog = await BlogModel.findById(blogId).lean<BlogDocument>().exec();
 
     if (!blog) {
       return NextResponse.json(
@@ -41,13 +49,11 @@ export async function GET(
       );
     }
 
-    // Type assertion and proper conversion
-    const blogDoc = blog as unknown as FlattenMaps<BlogDocument>;
-
+    // Properly typed transformation
     const responseData = {
-      ...blogDoc,
-      _id: blogDoc._id.toString(),
-      createdAt: blogDoc.createdAt.toISOString(),
+      ...blog,
+      _id: blog._id.toString(),
+      createdAt: blog.createdAt.toISOString(),
     };
 
     return NextResponse.json({ success: true, data: responseData });

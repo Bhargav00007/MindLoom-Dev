@@ -58,12 +58,18 @@ const BlogList = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {blogs.map((blog) => (
-        <BlogItem key={blog._id} blog={blog} />
-      ))}
+    <div className="flex justify-center">
+      <div className="flex flex-col gap-8 w-full max-w-3xl px-2">
+        {blogs.map((blog) => (
+          <div
+            key={blog._id}
+            className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition duration-300"
+          >
+            <BlogItem blog={blog} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
-
 export default BlogList;

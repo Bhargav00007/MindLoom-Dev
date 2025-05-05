@@ -1,6 +1,6 @@
 // models/Blog.ts
 
-import mongoose, { Schema, model, models } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const BlogSchema = new Schema(
   {
@@ -40,7 +40,6 @@ const BlogSchema = new Schema(
   { timestamps: true }
 );
 
-// Use existing model if already compiled (important in Next.js hot-reloading)
 const BlogModel = models.Blog || model("Blog", BlogSchema);
 
 export default BlogModel;

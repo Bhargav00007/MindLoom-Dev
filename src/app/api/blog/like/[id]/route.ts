@@ -1,19 +1,22 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "../../../../../../lib/config/db";
 import BlogModel from "../../../../../../lib/models/blogmodel";
 import { isValidObjectId } from "mongoose";
 
-// Ensure this route runs dynamically
 export const dynamic = "force-dynamic";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
 
-    const blogId = params.id;
+    const resolvedParams = await params;
+
+    // Proper access for dynamic routes
+    const blogId = resolvedParams.id;
 
     if (!blogId) {
       return NextResponse.json({ error: "Missing blog ID" }, { status: 400 });
@@ -34,8 +37,8 @@ export async function POST(
     }
 
     blog.likes = blog.likes || [];
-
     const alreadyLiked = blog.likes.includes(userId);
+
     if (alreadyLiked) {
       blog.likes = blog.likes.filter((uid: string) => uid !== userId);
     } else {

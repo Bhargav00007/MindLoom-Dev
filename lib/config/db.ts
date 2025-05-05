@@ -1,6 +1,4 @@
-// lib/db.ts
-
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
@@ -10,21 +8,23 @@ if (!MONGODB_URI) {
   );
 }
 
-interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+// Extend the global type to add a mongoose property
+declare global {
+  // eslint-disable-next-line no-var
+  var mongooseCache: {
+    conn: Mongoose | null;
+    promise: Promise<Mongoose> | null;
+  };
 }
 
-let cached: MongooseCache = (global as any).mongoose;
+let cached = global.mongooseCache;
 
 if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+  cached = global.mongooseCache = { conn: null, promise: null };
 }
 
-async function connectDB() {
-  if (cached.conn) {
-    return cached.conn;
-  }
+async function connectDB(): Promise<Mongoose> {
+  if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => {

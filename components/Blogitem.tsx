@@ -11,14 +11,12 @@ type Props = {
     authorName: string;
     authorImage: string;
     createdAt: string;
-    likes?: string[]; // 👈 Make sure this is passed from backend
+    likes?: string[];
   };
 };
 
 const BlogItem = ({ blog }: Props) => {
-  if (!blog || !blog._id || !blog.title || !blog.description) {
-    return null;
-  }
+  if (!blog || !blog._id || !blog.title || !blog.description) return null;
 
   const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -26,68 +24,55 @@ const BlogItem = ({ blog }: Props) => {
     day: "numeric",
   });
 
-  const handleLikeButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the click event from propagating to the parent div
-  };
-
-  const handleReadMoreClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the click event from propagating to the parent div
-  };
-
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white cursor-pointer hover:shadow-xl transition">
-      {/* Blog Image */}
-      <div className="h-48 bg-gray-200 flex items-center justify-center">
-        <img
-          src={blog.imagePath}
-          alt={blog.title}
-          className="h-full w-full object-cover"
-        />
-      </div>
+    <div className="w-full max-w-5xl ">
+      <div className="flex gap-5">
+        {/* Image */}
+        <div className="w-72 h-44 flex-shrink-0 rounded-lg overflow-hidden">
+          <img
+            src={blog.imagePath}
+            alt={blog.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-      {/* Content */}
-      <div className="p-4">
-        <h2 className="text-xl font-bold mb-2">{blog.title}</h2>
-        <p className="text-gray-600 mb-4">
-          {blog.description.length > 100
-            ? `${blog.description.slice(0, 100)}...`
-            : blog.description}
-        </p>
+        {/* Content */}
+        <div className="flex flex-col justify-between flex-grow">
+          {/* Title */}
+          <h2 className="text-xl font-semibold">{blog.title}</h2>
 
-        {/* Author Info */}
-        <div className="flex items-center mb-4 justify-between">
-          <div className="flex items-center">
-            <img
-              src={blog.authorImage}
-              alt={blog.authorName}
-              className="w-8 h-8 rounded-full object-cover mr-2"
-            />
-            <div className="text-sm text-gray-700">
-              <div className="font-semibold">{blog.authorName}</div>
-              <div className="text-gray-500 text-xs">{formattedDate}</div>
+          {/* Description + Read More */}
+          <Link href={`/blogs/${blog._id}`}>
+            <p className="text-gray-600 text-sm mt-1 cursor-pointer">
+              {blog.description.length > 120
+                ? `${blog.description.slice(0, 120)}... Read more`
+                : blog.description}
+            </p>
+          </Link>
+
+          {/* Footer Row: Author + Like */}
+          <div className="flex items-center justify-between mt-3">
+            <div className="flex items-center gap-2">
+              <img
+                src={blog.authorImage}
+                alt={blog.authorName}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+              <div>
+                <div className="text-sm font-medium text-gray-700">
+                  {blog.authorName}
+                </div>
+                <div className="text-xs text-gray-500">{formattedDate}</div>
+              </div>
             </div>
-          </div>
 
-          {/* ❤️ Like Button */}
-          <div onClick={handleLikeButtonClick}>
             <BlogLikeButton
               blogId={blog._id}
-              initialLiked={false} // Set to true if liked by this user (optional improvement)
+              initialLiked={false}
               initialLikeCount={blog.likes?.length || 0}
             />
           </div>
         </div>
-
-        {/* Read More */}
-        <Link href={`/blogs/${blog._id}`} passHref>
-          <div
-            className="text-blue-500 flex items-center"
-            onClick={handleReadMoreClick} // Stop propagation for the "Read More" link click
-          >
-            <span>Read more</span>
-            <span className="ml-1">→</span>
-          </div>
-        </Link>
       </div>
     </div>
   );

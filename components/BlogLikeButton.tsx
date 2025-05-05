@@ -51,7 +51,7 @@ const BlogLikeButton = ({ blogId, initialLiked, initialLikeCount }: Props) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`/api/blog/${blogId}/like`, {
+      const res = await fetch(`/api/blog/like/${blogId}  `, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: session.user.email }),

@@ -1,7 +1,7 @@
 import React from "react";
 import BlogList from "../../../components/BlogList";
 
-const page = () => {
+const Home = () => {
   return (
     <div>
       <BlogList />
@@ -9,4 +9,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Home;

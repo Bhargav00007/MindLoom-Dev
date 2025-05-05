@@ -5,7 +5,30 @@ import BlogModel from "../../../../lib/models/blogmodel";
 import fs from "fs";
 import path from "path";
 
-export async function POST(request: Request) {
+// Define TypeScript interfaces
+interface BlogPost {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  authorName: string;
+  authorImage: string;
+  imagePath: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface BlogResponse {
+  success: boolean;
+  data?: BlogPost | BlogPost[];
+  message?: string;
+  errorCode?: string;
+  error?: string;
+}
+
+export async function POST(
+  request: Request
+): Promise<NextResponse<BlogResponse>> {
   try {
     const session = await getServerSession();
     if (!session?.user) {
@@ -27,11 +50,18 @@ export async function POST(request: Request) {
     const category = formData.get("category")?.toString() || "";
     const image = formData.get("image") as Blob | null;
 
-    if (!title || !description || !category || !image) {
+    // Validate required fields
+    const missingFields = [];
+    if (!title) missingFields.push("title");
+    if (!description) missingFields.push("description");
+    if (!category) missingFields.push("category");
+    if (!image) missingFields.push("image");
+
+    if (missingFields.length > 0) {
       return NextResponse.json(
         {
           success: false,
-          message: "Missing required fields",
+          message: `Missing required fields: ${missingFields.join(", ")}`,
           errorCode: "MISSING_FIELDS",
         },
         { status: 400 }
@@ -46,10 +76,13 @@ export async function POST(request: Request) {
 
     const uniqueFileName = `image_${Date.now()}.png`;
     const filePath = path.join(uploadsDir, uniqueFileName);
+    if (!image) {
+      throw new Error("Image is null or undefined");
+    }
     const buffer = Buffer.from(await image.arrayBuffer());
     fs.writeFileSync(filePath, buffer);
 
-    // Create blog
+    // Create blog with TypeScript type
     const newBlog = new BlogModel({
       title,
       description,
@@ -61,12 +94,22 @@ export async function POST(request: Request) {
 
     await newBlog.save();
 
+    // Convert Mongoose document to plain object with proper typing
+    const responseData: BlogPost = {
+      _id: newBlog._id.toString(),
+      title: newBlog.title,
+      description: newBlog.description,
+      category: newBlog.category,
+      authorName: newBlog.authorName,
+      authorImage: newBlog.authorImage,
+      imagePath: newBlog.imagePath,
+      createdAt: newBlog.createdAt,
+      updatedAt: newBlog.updatedAt,
+    };
+
     return NextResponse.json({
       success: true,
-      data: {
-        ...newBlog.toObject(),
-        _id: newBlog._id.toString(),
-      },
+      data: responseData,
     });
   } catch (error) {
     console.error("Error creating blog:", error);
@@ -82,20 +125,24 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(): Promise<NextResponse<BlogResponse>> {
   try {
     await connectDB();
 
-    const blogs = (await BlogModel.find()
+    // Use proper typing for lean result
+    const blogs = await BlogModel.find()
       .sort({ createdAt: -1 })
-      .lean()) as Array<{ _id: any; [key: string]: any }>;
+      .lean<BlogPost[]>();
+
+    // Convert MongoDB ObjectId to string
+    const responseData = blogs.map((blog) => ({
+      ...blog,
+      _id: blog._id.toString(),
+    }));
 
     return NextResponse.json({
       success: true,
-      data: blogs.map((blog) => ({
-        ...blog,
-        _id: blog._id.toString(),
-      })),
+      data: responseData,
     });
   } catch (error) {
     console.error("Error fetching blogs:", error);

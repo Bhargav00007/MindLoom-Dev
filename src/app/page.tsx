@@ -1,8 +1,7 @@
 import React from "react";
-import Dashboard from "../../components/Dashboard";
 
-const page = () => {
+const Page = () => {
   return <div>Welcome to MindLoom</div>;
 };
 
-export default page;
+export default Page;
