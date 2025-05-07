@@ -1,13 +1,13 @@
 import { NextAuthOptions, User as AdapterUser } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import connectToDB from "../lib/config/db"; // adjust the path if needed
+import User from "../lib/models/user";
 
 // Extend the User interface to include the 'id' field
 interface ExtendedUser extends AdapterUser {
   id: string;
 }
-
-// Extend the Session interface to include ExtendedUser
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,20 +21,48 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt", // Ensures sessions are managed using JWT
+    strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      // Add user.id to token if it exists (on first sign in)
-      if (user) {
-        token.id = (user as ExtendedUser).id; // Cast user to ExtendedUser
+    async signIn({ user }) {
+      try {
+        await connectToDB();
+
+        const existingUser = await User.findOne({ email: user.email });
+
+        if (!existingUser) {
+          await User.create({
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          });
+          console.log("🆕 New user created:", user.email);
+        } else {
+          console.log("✅ User already exists:", user.email);
+        }
+
+        return true;
+      } catch (error) {
+        console.error("❌ Error in signIn callback:", error);
+        return false;
       }
+    },
+
+    async jwt({ token }) {
+      await connectToDB();
+
+      const dbUser = await User.findOne({ email: token.email });
+
+      if (dbUser) {
+        token.id = dbUser._id.toString(); // ✅ MongoDB ObjectId
+      }
+
       return token;
     },
+
     async session({ session, token }) {
-      // Ensure session.user has an id from the token
-      if (token.id) {
-        (session.user as ExtendedUser).id = token.id as string; // Cast session.user to ExtendedUser
+      if (token?.id) {
+        (session.user as ExtendedUser).id = token.id as string;
       }
       return session;
     },

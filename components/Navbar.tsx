@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import user from "../lib/models/user";
 
 export const Navbar = () => {
   const { data: session } = useSession();
@@ -145,14 +146,14 @@ export const Navbar = () => {
             </li>
 
             <li>
-              <Link
-                href="/profile"
-                className={`block py-2 px-3 rounded hover:text-blue-300 ${
-                  isActive("/profile") ? "text-blue-500 glow" : "text-white"
-                } hover:bg-gray-700 md:hover:bg-transparent`}
-              >
-                Profile
-              </Link>
+              {session?.user?.id && (
+                <Link
+                  href={`/profile/${session.user?.id}`}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                >
+                  Profile
+                </Link>
+              )}
             </li>
             <li>
               <Link

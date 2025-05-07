@@ -1,6 +1,4 @@
-// models/Blog.ts
-
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Types } from "mongoose";
 
 const BlogSchema = new Schema(
   {
@@ -15,6 +13,11 @@ const BlogSchema = new Schema(
     category: {
       type: String,
       required: [true, "Category is required"],
+    },
+    authorId: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     authorName: {
       type: String,
