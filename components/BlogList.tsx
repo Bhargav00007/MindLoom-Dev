@@ -10,6 +10,7 @@ type Blog = {
   imagePath: string;
   authorName: string;
   authorImage: string;
+  authorId: string; // ✅ Added authorId
   createdAt: string;
 };
 
@@ -59,7 +60,7 @@ const BlogList = () => {
 
   return (
     <div className="flex justify-center">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 m-20">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 m-20 p-10">
         {blogs.map((blog) => (
           <BlogItem key={blog._id} blog={blog} />
         ))}

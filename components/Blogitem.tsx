@@ -11,6 +11,7 @@ type Props = {
     imagePath: string;
     authorName: string;
     authorImage: string;
+    authorId: string; // ✅ Added authorId
     createdAt: string;
     likes?: string[];
   };
@@ -55,20 +56,23 @@ const BlogItem = ({ blog }: Props) => {
 
         {/* Bottom: Author on left, Like on right */}
         <div className="flex justify-between items-center mt-4">
-          {/* Author info on left */}
-          <div className="flex items-center gap-2">
+          {/* Author info wrapped in Link */}
+          <Link
+            href={`/profile/${blog.authorId}`}
+            className="flex items-center gap-2 group"
+          >
             <img
               src={blog.authorImage}
               alt={blog.authorName}
-              className="w-8 h-8 rounded-full object-cover"
+              className="w-8 h-8 rounded-full object-cover border group-hover:border-blue-500 transition"
             />
             <div>
-              <p className="text-sm font-medium text-gray-800">
+              <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition">
                 {blog.authorName}
               </p>
               <p className="text-xs text-gray-500">{formattedDate}</p>
             </div>
-          </div>
+          </Link>
 
           {/* Like button on right */}
           <BlogLikeButton

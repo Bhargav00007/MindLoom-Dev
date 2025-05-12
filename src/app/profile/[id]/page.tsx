@@ -11,6 +11,8 @@ type Blog = {
   imagePath: string;
   authorName: string;
   authorImage: string;
+  authorId: string;
+
   createdAt: string;
   likes?: string[];
 };
