@@ -18,14 +18,15 @@ const BlogLikeButton = ({ blogId, initialLiked, initialLikeCount }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!session) return;
+    if (!session?.user?.id) return;
 
     const fetchLikes = async () => {
       try {
         const res = await fetch(`/api/blog/${blogId}`);
         const data = await res.json();
+
         setLikesCount(data.likes?.length || 0);
-        setLiked(data.likes?.includes(session.user?.email || "") || false);
+        setLiked(data.likes?.includes(session.user.id) || false); // ✅ use id
       } catch (err) {
         console.error("Failed to fetch likes:", err);
         toast.error("Could not fetch likes");
@@ -36,7 +37,7 @@ const BlogLikeButton = ({ blogId, initialLiked, initialLikeCount }: Props) => {
   }, [session, blogId]);
 
   const toggleLike = async () => {
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       toast.error("Please sign in first");
       return;
     }
@@ -51,10 +52,10 @@ const BlogLikeButton = ({ blogId, initialLiked, initialLikeCount }: Props) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`/api/blog/like/${blogId}  `, {
+      const res = await fetch(`/api/blog/like/${blogId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session.user.email }),
+        body: JSON.stringify({ userId: session.user.id }), // ✅ use _id
       });
 
       const data = await res.json();
@@ -78,7 +79,7 @@ const BlogLikeButton = ({ blogId, initialLiked, initialLikeCount }: Props) => {
     <button
       onClick={toggleLike}
       disabled={isLoading}
-      className={`mt-4 flex items-center gap-2 px-4 py-2 bg-white  rounded transition pb-7 ${
+      className={`mt-4 flex items-center gap-2 px-4 py-2 bg-white rounded transition pb-7 ${
         isLoading ? "opacity-50 cursor-not-allowed" : ""
       }`}
     >
