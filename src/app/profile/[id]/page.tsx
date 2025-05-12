@@ -1,71 +1,83 @@
-import { Metadata } from "next";
-import Dashboard from "../../../../components/Dashboard";
-import Image from "next/image";
-import React from "react";
+"use client";
 
-// Fetch profile data including user and blogs
-async function getProfileData(id: string) {
-  const res = await fetch(`${process.env.NEXTAUTH_URL}/api/profile/${id}`, {
-    cache: "no-store",
-  });
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import BlogItem from "../../../../components/Blogitem";
 
-  if (!res.ok) return null;
+type Blog = {
+  _id: string;
+  title: string;
+  description: string;
+  imagePath: string;
+  authorName: string;
+  authorImage: string;
+  createdAt: string;
+  likes?: string[];
+};
 
-  return res.json();
-}
+type User = {
+  _id: string;
+  name: string;
+  email: string;
+  image?: string;
+};
 
-export default async function ProfilePage({
-  params,
-}: {
-  params: Promise<{ id: string }>; // ✅ Wrapped in Promise
-}) {
-  const resolvedParams = await params;
-  const data = await getProfileData(resolvedParams.id);
+export default function UserProfilePage() {
+  const { id } = useParams(); // Get user ID from route
+  const [user, setUser] = useState<User | null>(null);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!data || !data.user) {
-    return <p className="text-center mt-10 text-red-500">User not found</p>;
-  }
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(`/api/profile/${id}`);
+        const data = await res.json();
+        if (data.success) {
+          setUser(data.user);
+          setBlogs(data.blogs);
+        }
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const { user, blogs } = data;
+    if (id) fetchProfile();
+  }, [id]);
+
+  if (loading) return <p>Loading profile...</p>;
+  if (!user) return <p>User not found</p>;
 
   return (
-    <div>
-      <Dashboard />
-      <div className="max-w-4xl mx-auto py-10 px-4">
-        <div className="flex items-center gap-4 mb-8">
-          <Image
-            src={user.image || "/default-avatar.png"}
+    <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="flex items-center gap-4 mb-6">
+        {user.image && (
+          <img
+            src={user.image}
             alt={user.name}
-            width={60}
-            height={60}
-            className="rounded-full"
+            className="w-16 h-16 rounded-full object-cover"
           />
-          <div>
-            <h2 className="text-2xl font-bold">{user.name}</h2>
-            <p className="text-gray-600">{user.email}</p>
-          </div>
+        )}
+        <div>
+          <h1 className="text-2xl font-bold">{user.name}</h1>
         </div>
+      </div>
+      <h1 className="text-xl mb-5 ">{user.name}'s Creations:</h1>
 
-        <h3 className="text-xl font-semibold mb-4">Blogs by {user.name}</h3>
-        <div className="space-y-4">
-          {blogs.length === 0 ? (
-            <p className="text-gray-500">
-              This user has not posted any blogs yet.
-            </p>
-          ) : (
-            blogs.map((blog: any) => (
-              <div
-                key={blog._id}
-                className="p-4 border rounded-md shadow-sm bg-white"
-              >
-                <h4 className="text-lg font-medium">{blog.title}</h4>
-                <p className="text-sm text-gray-600">
-                  {blog.description.slice(0, 100)}...
-                </p>
-              </div>
-            ))
-          )}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+        {blogs.length > 0 ? (
+          blogs.map((blog) => (
+            <div key={blog._id} className=" rounded-lg   bg-white">
+              <BlogItem blog={blog} />
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">
+            This user has not posted any blogs yet.
+          </p>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectDB from "../../../../lib/config/db";
 import BlogModel from "../../../../lib/models/blogmodel";
+import UserModel from "../../../../lib/models/user"; // ✅ import User model
 import fs from "fs";
 import path from "path";
 
@@ -68,6 +69,19 @@ export async function POST(
       );
     }
 
+    // ✅ Get user from DB to extract Mongo _id
+    const user = await UserModel.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "User not found",
+          errorCode: "USER_NOT_FOUND",
+        },
+        { status: 404 }
+      );
+    }
+
     // Image handling
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadsDir)) {
@@ -82,11 +96,12 @@ export async function POST(
     const buffer = Buffer.from(await image.arrayBuffer());
     fs.writeFileSync(filePath, buffer);
 
-    // Create blog with TypeScript type
+    // ✅ Create blog with authorId (MongoDB _id)
     const newBlog = new BlogModel({
       title,
       description,
       category,
+      authorId: user._id, // ✅ Actual user ID from MongoDB
       authorName: session.user.name || "Anonymous",
       authorImage: session.user.image || "",
       imagePath: `/uploads/${uniqueFileName}`,
@@ -94,7 +109,6 @@ export async function POST(
 
     await newBlog.save();
 
-    // Convert Mongoose document to plain object with proper typing
     const responseData: BlogPost = {
       _id: newBlog._id.toString(),
       title: newBlog.title,
@@ -129,12 +143,10 @@ export async function GET(): Promise<NextResponse<BlogResponse>> {
   try {
     await connectDB();
 
-    // Use proper typing for lean result
     const blogs = await BlogModel.find()
       .sort({ createdAt: -1 })
       .lean<BlogPost[]>();
 
-    // Convert MongoDB ObjectId to string
     const responseData = blogs.map((blog) => ({
       ...blog,
       _id: blog._id.toString(),

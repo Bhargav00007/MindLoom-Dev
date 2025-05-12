@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import Link from "next/link";
 import BlogLikeButton from "./BlogLikeButton";
 
@@ -16,7 +17,7 @@ type Props = {
 };
 
 const BlogItem = ({ blog }: Props) => {
-  if (!blog || !blog._id || !blog.title || !blog.description) return null;
+  if (!blog || !blog._id) return null;
 
   const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -25,53 +26,56 @@ const BlogItem = ({ blog }: Props) => {
   });
 
   return (
-    <div className="w-full max-w-5xl ">
-      <div className="flex gap-5">
-        {/* Image */}
-        <div className="w-72 h-44 flex-shrink-0 rounded-lg overflow-hidden">
-          <img
-            src={blog.imagePath}
-            alt={blog.title}
-            className="w-full h-full object-cover"
-          />
+    <div className="flex flex-col w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-white">
+      {/* Image */}
+      <div className="h-52 w-full overflow-hidden">
+        <img
+          src={blog.imagePath}
+          alt={blog.title}
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 p-4 flex flex-col justify-between">
+        {/* Title */}
+        <h2 className="text-lg font-semibold mb-2 line-clamp-2">
+          {blog.title}
+        </h2>
+
+        {/* Description */}
+        <div className="text-gray-700 text-sm">
+          <p className="line-clamp-3">{blog.description}</p>
+          <Link href={`/blogs/${blog._id}`}>
+            <span className="text-blue-600 text-sm hover:underline cursor-pointer">
+              Read more
+            </span>
+          </Link>
         </div>
 
-        {/* Content */}
-        <div className="flex flex-col justify-between flex-grow">
-          {/* Title */}
-          <h2 className="text-xl font-semibold">{blog.title}</h2>
-
-          {/* Description + Read More */}
-          <Link href={`/blogs/${blog._id}`}>
-            <p className="text-gray-600 text-sm mt-1 cursor-pointer">
-              {blog.description.length > 120
-                ? `${blog.description.slice(0, 120)}... Read more`
-                : blog.description}
-            </p>
-          </Link>
-
-          {/* Footer Row: Author + Like */}
-          <div className="flex items-center justify-between mt-3">
-            <div className="flex items-center gap-2">
-              <img
-                src={blog.authorImage}
-                alt={blog.authorName}
-                className="w-8 h-8 rounded-full object-cover"
-              />
-              <div>
-                <div className="text-sm font-medium text-gray-700">
-                  {blog.authorName}
-                </div>
-                <div className="text-xs text-gray-500">{formattedDate}</div>
-              </div>
-            </div>
-
-            <BlogLikeButton
-              blogId={blog._id}
-              initialLiked={false}
-              initialLikeCount={blog.likes?.length || 0}
+        {/* Bottom: Author on left, Like on right */}
+        <div className="flex justify-between items-center mt-4">
+          {/* Author info on left */}
+          <div className="flex items-center gap-2">
+            <img
+              src={blog.authorImage}
+              alt={blog.authorName}
+              className="w-8 h-8 rounded-full object-cover"
             />
+            <div>
+              <p className="text-sm font-medium text-gray-800">
+                {blog.authorName}
+              </p>
+              <p className="text-xs text-gray-500">{formattedDate}</p>
+            </div>
           </div>
+
+          {/* Like button on right */}
+          <BlogLikeButton
+            blogId={blog._id}
+            initialLiked={false}
+            initialLikeCount={blog.likes?.length || 0}
+          />
         </div>
       </div>
     </div>

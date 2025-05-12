@@ -1,5 +1,20 @@
 import { Schema, model, models, Types } from "mongoose";
 
+const LikeSchema = new Schema(
+  {
+    userId: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    likedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
 const BlogSchema = new Schema(
   {
     title: {
@@ -36,7 +51,7 @@ const BlogSchema = new Schema(
       default: Date.now,
     },
     likes: {
-      type: [String],
+      type: [LikeSchema],
       default: [],
     },
   },

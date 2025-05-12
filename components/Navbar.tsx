@@ -1,9 +1,9 @@
 "use client";
+
 import React, { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import user from "../lib/models/user";
 
 export const Navbar = () => {
   const { data: session } = useSession();
@@ -18,16 +18,17 @@ export const Navbar = () => {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className=" border-gray-200 bg-black  relative z-10  ">
+    <nav className="border-gray-200 bg-black relative z-10">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
           href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
-          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white font-poppins">
+          <span className="self-center text-2xl font-semibold whitespace-nowrap text-white font-poppins">
             MindLoom
           </span>
         </Link>
+
         <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           {session ? (
             <>
@@ -47,9 +48,10 @@ export const Navbar = () => {
                   className="rounded-full h-10 w-10 border-2 border-black"
                 />
               </button>
+
               {/* Dropdown menu */}
               {isDropdownOpen && (
-                <div className="absolute top-14 right-4 mt-2 w-55  divide-y divide-gray-100 rounded-lg shadow-lg bg-gray-700 dark:divide-gray-600 ">
+                <div className="absolute top-14 right-4 mt-2 w-55 divide-y divide-gray-100 rounded-lg shadow-lg bg-gray-700 dark:divide-gray-600">
                   <div className="px-4 py-3">
                     <span className="block text-sm text-transparent dark:text-white">
                       {session.user?.name}
@@ -61,13 +63,12 @@ export const Navbar = () => {
                   <ul className="py-2">
                     <li>
                       <a
-                        href="profile"
+                        href={`/profile/${session.user.id}`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                       >
                         Profile
                       </a>
                     </li>
-
                     <li>
                       <button
                         onClick={() => {
@@ -86,16 +87,17 @@ export const Navbar = () => {
             <div>
               <button
                 onClick={() => signIn("google")}
-                className=" rounded-lg  px-3 py-1 bg-rose-900 text-white hover:bg-rose-500  transition-all duration-200 font-poppins"
+                className="rounded-lg px-3 py-1 bg-rose-900 text-white hover:bg-rose-500 transition-all duration-200 font-poppins"
               >
                 Sign in
               </button>
             </div>
           )}
+
           <button
             data-collapse-toggle="navbar-user"
             type="button"
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 "
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700"
             aria-controls="navbar-user"
             aria-expanded="false"
           >
@@ -117,6 +119,7 @@ export const Navbar = () => {
             </svg>
           </button>
         </div>
+
         <div
           className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
           id="navbar-user"
@@ -144,12 +147,15 @@ export const Navbar = () => {
                 About
               </Link>
             </li>
-
             <li>
               {session?.user?.id && (
                 <Link
-                  href={`/profile/${session.user?.id}`}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                  href={`/profile/${session.user.id}`}
+                  className={`block py-2 px-3 rounded hover:text-blue-300 ${
+                    isActive(`/profile/${session.user.id}`)
+                      ? "text-blue-500 glow"
+                      : "text-white"
+                  } hover:bg-gray-700 md:hover:bg-transparent`}
                 >
                   Profile
                 </Link>

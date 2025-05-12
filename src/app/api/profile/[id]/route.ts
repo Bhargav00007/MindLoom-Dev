@@ -27,13 +27,21 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  await connectToDB();
-
   try {
-    const resolvedParams = await params;
+    await connectToDB();
 
-    const user = await User.findById(resolvedParams.id).lean<LeanUser>();
+    const { id } = await params;
 
+    // Validate ObjectId format (optional but helpful)
+    if (!id || id.length !== 24) {
+      return NextResponse.json(
+        { success: false, message: "Invalid user ID format" },
+        { status: 400 }
+      );
+    }
+
+    // Find user by ID
+    const user = await User.findById(id).lean<LeanUser>();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
@@ -41,7 +49,10 @@ export async function GET(
       );
     }
 
-    const blogs = await Blog.find({ authorId: user._id }).lean<LeanBlog[]>();
+    // Find all blogs created by the user (using real MongoDB _id match)
+    const blogs = await Blog.find({ authorId: user._id })
+      .sort({ createdAt: -1 })
+      .lean<LeanBlog[]>();
 
     return NextResponse.json({
       success: true,
@@ -51,7 +62,11 @@ export async function GET(
   } catch (error) {
     console.error("Error in /api/profile/[id]:", error);
     return NextResponse.json(
-      { success: false, message: "Error", error },
+      {
+        success: false,
+        message: "Server error",
+        error: (error as Error).message,
+      },
       { status: 500 }
     );
   }
