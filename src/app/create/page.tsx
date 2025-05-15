@@ -38,7 +38,7 @@ const Create = () => {
       if (response.ok) {
         toast.success("Blog created successfully!");
       } else {
-        toast.error(data.msg || "Something went wrong!");
+        toast.error(data.msg || "Please Sign In before you create!");
       }
     } catch (error) {
       console.error("Error submitting blog:", error);
