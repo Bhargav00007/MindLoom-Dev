@@ -145,7 +145,7 @@ export default function UserProfilePage() {
         )}
       </div>
 
-      <hr className="border-t border-gray-200 my-6" />
+      <hr className="border-t border-gray-400 my-6" />
 
       <h1 className="text-xl mb-5">{user?.name}'s Creations:</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

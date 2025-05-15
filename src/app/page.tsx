@@ -1,7 +1,12 @@
 import React from "react";
+import { HeroSectionOne } from "../../components/Hero";
 
 const Page = () => {
-  return <div>Welcome to MindLoom</div>;
+  return (
+    <div className="bg-black">
+      <HeroSectionOne />
+    </div>
+  );
 };
 
 export default Page;
