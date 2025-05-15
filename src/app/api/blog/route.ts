@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectDB from "../../../../lib/config/db";
 import BlogModel from "../../../../lib/models/blogmodel";
-import UserModel from "../../../../lib/models/user"; // ✅ import User model
+import UserModel from "../../../../lib/models/user";
 import fs from "fs";
 import path from "path";
 
@@ -51,7 +51,6 @@ export async function POST(
     const category = formData.get("category")?.toString() || "";
     const image = formData.get("image") as Blob | null;
 
-    // Validate required fields
     const missingFields = [];
     if (!title) missingFields.push("title");
     if (!description) missingFields.push("description");
@@ -69,7 +68,6 @@ export async function POST(
       );
     }
 
-    // ✅ Get user from DB to extract Mongo _id
     const user = await UserModel.findOne({ email: session.user.email });
     if (!user) {
       return NextResponse.json(
@@ -82,7 +80,6 @@ export async function POST(
       );
     }
 
-    // Image handling
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
@@ -96,12 +93,11 @@ export async function POST(
     const buffer = Buffer.from(await image.arrayBuffer());
     fs.writeFileSync(filePath, buffer);
 
-    // ✅ Create blog with authorId (MongoDB _id)
     const newBlog = new BlogModel({
       title,
       description,
       category,
-      authorId: user._id, // ✅ Actual user ID from MongoDB
+      authorId: user._id,
       authorName: session.user.name || "Anonymous",
       authorImage: session.user.image || "",
       imagePath: `/uploads/${uniqueFileName}`,
@@ -158,6 +154,86 @@ export async function GET(): Promise<NextResponse<BlogResponse>> {
     });
   } catch (error) {
     console.error("Error fetching blogs:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+        errorCode: "SERVER_ERROR",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request
+): Promise<NextResponse<BlogResponse>> {
+  try {
+    const session = await getServerSession();
+    if (!session?.user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+          errorCode: "UNAUTHORIZED",
+        },
+        { status: 401 }
+      );
+    }
+
+    await connectDB();
+
+    const { blogId } = await request.json();
+
+    if (!blogId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Blog ID is required",
+          errorCode: "MISSING_BLOG_ID",
+        },
+        { status: 400 }
+      );
+    }
+
+    const blog = await BlogModel.findById(blogId);
+    if (!blog) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Blog not found",
+          errorCode: "BLOG_NOT_FOUND",
+        },
+        { status: 404 }
+      );
+    }
+
+    const user = await UserModel.findOne({ email: session.user.email });
+    if (!user || blog.authorId.toString() !== user._id.toString()) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Forbidden: You can't delete this blog",
+          errorCode: "FORBIDDEN",
+        },
+        { status: 403 }
+      );
+    }
+
+    const fullImagePath = path.join(process.cwd(), "public", blog.imagePath);
+    if (fs.existsSync(fullImagePath)) {
+      fs.unlinkSync(fullImagePath);
+    }
+
+    await BlogModel.findByIdAndDelete(blogId);
+
+    return NextResponse.json({
+      success: true,
+      message: "Blog deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting blog:", error);
     return NextResponse.json(
       {
         success: false,

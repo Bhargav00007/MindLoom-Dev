@@ -17,12 +17,19 @@ export async function POST(
     const resolvedParams = await params;
     const blogId = resolvedParams.id;
 
-    if (!blogId) {
-      return NextResponse.json({ error: "Missing blog ID" }, { status: 400 });
+    if (!blogId || !isValidObjectId(blogId)) {
+      return NextResponse.json(
+        { error: "Invalid or missing blog ID" },
+        { status: 400 }
+      );
     }
 
-    if (!isValidObjectId(blogId)) {
-      return NextResponse.json({ error: "Invalid blog ID" }, { status: 400 });
+    const { userId } = await req.json();
+    if (!userId || !isValidObjectId(userId)) {
+      return NextResponse.json(
+        { error: "Invalid or missing userId" },
+        { status: 400 }
+      );
     }
 
     const blog = await BlogModel.findById(blogId);
@@ -30,26 +37,24 @@ export async function POST(
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
-    const { userId } = await req.json();
-    if (!userId) {
-      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
-    }
-
-    if (!isValidObjectId(userId)) {
-      return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
-    }
-
     const user = await UserModel.findById(userId);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const alreadyLiked = blog.likes?.includes(userId);
-    const updatedLikes = alreadyLiked
-      ? blog.likes.filter((uid: string) => uid !== userId)
-      : [...blog.likes, userId];
+    const alreadyLiked = blog.likes.some(
+      (like: any) => like.userId?.toString() === userId
+    );
 
-    // ✅ Bypass validation since we’re not modifying required fields like authorId
+    let updatedLikes;
+    if (alreadyLiked) {
+      updatedLikes = blog.likes.filter(
+        (like: any) => like.userId?.toString() !== userId
+      );
+    } else {
+      updatedLikes = [...blog.likes, { userId }];
+    }
+
     await BlogModel.findByIdAndUpdate(
       blogId,
       { likes: updatedLikes },

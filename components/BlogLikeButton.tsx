@@ -7,69 +7,66 @@ import { FaRegHeart, FaHeart } from "react-icons/fa";
 
 type Props = {
   blogId: string;
-  initialLiked: boolean;
-  initialLikeCount: number;
 };
 
-const BlogLikeButton = ({ blogId, initialLiked, initialLikeCount }: Props) => {
+const BlogLikeButton = ({ blogId }: Props) => {
   const { data: session } = useSession();
-  const [liked, setLiked] = useState(initialLiked);
-  const [likesCount, setLikesCount] = useState(initialLikeCount);
+  const userId = session?.user?.id;
+
+  const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!session?.user?.id) return;
-
     const fetchLikes = async () => {
       try {
         const res = await fetch(`/api/blog/${blogId}`);
-        const data = await res.json();
+        const result = await res.json();
 
-        setLikesCount(data.likes?.length || 0);
-        setLiked(data.likes?.includes(session.user.id) || false); // ✅ use id
+        if (!res.ok || !result.data) {
+          throw new Error(result.message || "Failed to load likes");
+        }
+
+        const likes = Array.isArray(result.data.likes) ? result.data.likes : [];
+
+        setLikesCount(likes.length);
+        setLiked(userId ? likes.includes(userId) : false);
       } catch (err) {
         console.error("Failed to fetch likes:", err);
-        toast.error("Could not fetch likes");
       }
     };
 
-    fetchLikes();
-  }, [session, blogId]);
+    if (blogId && userId) fetchLikes();
+  }, [blogId, userId]);
 
   const toggleLike = async () => {
-    if (!session?.user?.id) {
+    if (!userId) {
       toast.error("Please sign in first");
       return;
     }
 
     if (isLoading) return;
-
-    if (!blogId || typeof blogId !== "string") {
-      toast.error("Invalid blog ID");
-      return;
-    }
-
     setIsLoading(true);
 
     try {
       const res = await fetch(`/api/blog/like/${blogId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: session.user.id }), // ✅ use _id
+        body: JSON.stringify({ userId }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setLikesCount(data.likes);
+        setLikesCount(typeof data.likes === "number" ? data.likes : 0);
         setLiked(data.liked);
-        toast.success(data.liked ? "Post liked!" : "Like removed");
+        toast.success(data.liked ? "Liked!" : "Unliked");
       } else {
-        toast.error(data.error || "Something went wrong");
+        toast.error(data.error || "Error updating like");
       }
     } catch (err) {
-      console.error("Error toggling like:", err);
-      toast.error("Unexpected error occurred");
+      console.error("Toggle like failed:", err);
+      toast.error("Unexpected error");
     } finally {
       setIsLoading(false);
     }

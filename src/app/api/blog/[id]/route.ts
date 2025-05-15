@@ -3,7 +3,7 @@ import connectDB from "../../../../../lib/config/db";
 import BlogModel from "../../../../../lib/models/blogmodel";
 import { isValidObjectId } from "mongoose";
 
-// Define strict response type
+// Define correct type for likes
 type BlogDocument = {
   _id: string;
   title: string;
@@ -14,16 +14,15 @@ type BlogDocument = {
   createdAt: Date;
   category: string;
   __v: number;
-  // Add other fields as needed
+  likes: { userId: string }[]; // expecting this shape
 };
 
 export async function GET(request: Request) {
   try {
     await connectDB();
 
-    // Extract ID from URL
     const pathSegments = new URL(request.url).pathname.split("/");
-    const blogId = pathSegments[3];
+    const blogId = pathSegments[3]; // /api/blog/[id]
 
     if (!blogId) {
       return NextResponse.json(
@@ -39,8 +38,9 @@ export async function GET(request: Request) {
       );
     }
 
-    // Use explicit typing with lean()
-    const blog = await BlogModel.findById(blogId).lean<BlogDocument>().exec();
+    const blog = await BlogModel.findById(blogId)
+      .lean<Partial<BlogDocument>>()
+      .exec();
 
     if (!blog) {
       return NextResponse.json(
@@ -49,14 +49,24 @@ export async function GET(request: Request) {
       );
     }
 
-    // Properly typed transformation
+    // Ensure likes is a valid array
+    const likeUserIds = Array.isArray(blog.likes)
+      ? blog.likes
+          .filter((like): like is { userId: string } => !!like?.userId)
+          .map((like) => like.userId.toString())
+      : [];
+
     const responseData = {
       ...blog,
-      _id: blog._id.toString(),
-      createdAt: blog.createdAt.toISOString(),
+      _id: blog._id?.toString(),
+      createdAt: blog.createdAt?.toISOString(),
+      likes: likeUserIds,
     };
 
-    return NextResponse.json({ success: true, data: responseData });
+    return NextResponse.json(
+      { success: true, data: responseData },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching blog:", error);
     return NextResponse.json(

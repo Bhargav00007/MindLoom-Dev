@@ -70,6 +70,22 @@ export const Navbar = () => {
                       </a>
                     </li>
                     <li>
+                      <a
+                        href={`/create`}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                      >
+                        Create
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={`/delete`}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                      >
+                        Delete
+                      </a>
+                    </li>
+                    <li>
                       <button
                         onClick={() => {
                           signOut();
@@ -148,6 +164,16 @@ export const Navbar = () => {
               </Link>
             </li>
             <li>
+              <Link
+                href="/create"
+                className={`block py-2 px-3 rounded hover:text-blue-300 ${
+                  isActive("/create") ? "text-blue-500 glow" : "text-white"
+                } hover:bg-gray-700 md:hover:bg-transparent`}
+              >
+                Create
+              </Link>
+            </li>
+            <li>
               {session?.user?.id && (
                 <Link
                   href={`/profile/${session.user.id}`}
@@ -160,16 +186,6 @@ export const Navbar = () => {
                   Profile
                 </Link>
               )}
-            </li>
-            <li>
-              <Link
-                href="/create"
-                className={`block py-2 px-3 rounded hover:text-blue-300 ${
-                  isActive("/create") ? "text-blue-500 glow" : "text-white"
-                } hover:bg-gray-700 md:hover:bg-transparent`}
-              >
-                Create
-              </Link>
             </li>
           </ul>
         </div>

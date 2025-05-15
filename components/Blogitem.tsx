@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import BlogLikeButton from "./BlogLikeButton";
 
 type Props = {
@@ -11,14 +12,24 @@ type Props = {
     imagePath: string;
     authorName: string;
     authorImage: string;
-    authorId: string; // ✅ Added authorId
+    authorId: string;
     createdAt: string;
     likes?: string[];
   };
 };
 
 const BlogItem = ({ blog }: Props) => {
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id;
+
   if (!blog || !blog._id) return null;
+
+  // ✅ ADD THIS BLOCK RIGHT HERE:
+  let hasUserLiked = false;
+  if (currentUserId && Array.isArray(blog.likes)) {
+    hasUserLiked = blog.likes.includes(currentUserId);
+  }
+  const totalLikes = blog.likes?.length || 0;
 
   const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -39,12 +50,10 @@ const BlogItem = ({ blog }: Props) => {
 
       {/* Content */}
       <div className="flex-1 p-4 flex flex-col justify-between">
-        {/* Title */}
         <h2 className="text-lg font-semibold mb-2 line-clamp-2">
           {blog.title}
         </h2>
 
-        {/* Description */}
         <div className="text-gray-700 text-sm">
           <p className="line-clamp-3">{blog.description}</p>
           <Link href={`/blogs/${blog._id}`}>
@@ -54,9 +63,8 @@ const BlogItem = ({ blog }: Props) => {
           </Link>
         </div>
 
-        {/* Bottom: Author on left, Like on right */}
+        {/* Bottom section */}
         <div className="flex justify-between items-center mt-4">
-          {/* Author info wrapped in Link */}
           <Link
             href={`/profile/${blog.authorId}`}
             className="flex items-center gap-2 group"
@@ -74,12 +82,7 @@ const BlogItem = ({ blog }: Props) => {
             </div>
           </Link>
 
-          {/* Like button on right */}
-          <BlogLikeButton
-            blogId={blog._id}
-            initialLiked={false}
-            initialLikeCount={blog.likes?.length || 0}
-          />
+          <BlogLikeButton blogId={blog._id} />
         </div>
       </div>
     </div>
