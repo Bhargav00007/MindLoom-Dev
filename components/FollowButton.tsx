@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import { MoonLoader } from "react-spinners";
 
 type Props = {
   targetUserId: string;
@@ -62,13 +63,19 @@ export default function FollowButton({
             <button
               onClick={toggleFollow}
               disabled={loading}
-              className={`px-10 py-2 rounded text-white transition ${
+              className={`flex items-center justify-center gap-2 px-10 py-2 rounded text-white transition ${
                 isFollowing
                   ? "bg-gray-600 hover:bg-gray-700"
                   : "bg-red-600 hover:bg-red-700"
               }`}
             >
-              {isFollowing ? "Following" : "Follow"}
+              {loading ? (
+                <MoonLoader size={20} color="#ffffff" />
+              ) : isFollowing ? (
+                "Following"
+              ) : (
+                "Follow"
+              )}
             </button>
           )}
         </div>
@@ -79,13 +86,19 @@ export default function FollowButton({
             <button
               onClick={toggleFollow}
               disabled={loading}
-              className={`w-full text-center px-4 py-2 rounded text-white transition ${
+              className={`flex items-center justify-center gap-2 w-full text-center px-4 py-2 rounded text-white transition ${
                 isFollowing
                   ? "bg-gray-600 hover:bg-gray-700"
                   : "bg-red-600 hover:bg-red-700"
               }`}
             >
-              {isFollowing ? "Following" : "Follow"}
+              {loading ? (
+                <MoonLoader size={20} color="#ffffff" />
+              ) : isFollowing ? (
+                "Following"
+              ) : (
+                "Follow"
+              )}
             </button>
           )}
         </div>

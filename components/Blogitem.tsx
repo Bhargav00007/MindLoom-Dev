@@ -73,7 +73,13 @@ const BlogItem = ({ blog }: Props) => {
               src={blog.authorImage}
               alt={blog.authorName}
               className="w-8 h-8 rounded-full object-cover border group-hover:border-blue-500 transition"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.onerror = null;
+                target.src = "/profileimage.jpg";
+              }}
             />
+
             <div>
               <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition">
                 {blog.authorName}

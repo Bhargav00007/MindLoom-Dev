@@ -91,13 +91,19 @@ export default function DeletePage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <div className="flex items-center gap-4 mb-6">
-        {user.image && (
+        {user?.image && (
           <img
             src={user.image}
             alt={user.name}
-            className="w-16 h-16 rounded-full object-cover"
+            className="w-24 h-24 rounded-full object-cover mx-auto sm:mx-0"
+            onError={(e) => {
+              const target = e.currentTarget;
+              target.onerror = null; // Prevent infinite loop in case fallback also fails
+              target.src = "/profileimage.jpg";
+            }}
           />
         )}
+
         <div>
           <h1 className="text-2xl font-bold">{user.name}</h1>
         </div>

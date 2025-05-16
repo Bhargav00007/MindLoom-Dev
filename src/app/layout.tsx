@@ -4,8 +4,9 @@ import "./globals.css";
 import SessionWrapper from "../../components/SessionWrapper";
 import Script from "next/script";
 import { Navbar } from "../../components/Navbar";
-import { ToastContainer } from "react-toastify"; // Import ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import styles for Toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingProvider from "../../components/LoadingProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +34,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionWrapper>
-          <Navbar />
-          {children}
+          <LoadingProvider>
+            <Navbar />
+            {children}
+          </LoadingProvider>
         </SessionWrapper>
+
         <Script
           src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"
           strategy="beforeInteractive"

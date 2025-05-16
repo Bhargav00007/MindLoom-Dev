@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import BlogItem from "./Blogitem";
+import { MoonLoader } from "react-spinners";
+import FollowingFeed from "./FollowingFeed";
 
 type Blog = {
   _id: string;
@@ -51,7 +53,11 @@ const BlogList = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center p-8">Loading blogs...</div>;
+    return (
+      <div className="flex items-center justify-center h-[400px]">
+        <MoonLoader size={40} color="#e11d48" />
+      </div>
+    );
   }
 
   if (error) {
@@ -59,13 +65,18 @@ const BlogList = () => {
   }
 
   return (
-    <div className="flex justify-center">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:m-20 m-5">
-        {blogs.map((blog) => (
-          <BlogItem key={blog._id} blog={blog} />
-        ))}
+    <>
+      <div className="">
+        <FollowingFeed />
       </div>
-    </div>
+      <div className="flex justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:m-20 m-5">
+          {blogs.map((blog) => (
+            <BlogItem key={blog._id} blog={blog} />
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 export default BlogList;

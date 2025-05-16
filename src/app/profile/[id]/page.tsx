@@ -6,11 +6,13 @@ import { useSession } from "next-auth/react";
 import BlogItem from "../../../../components/Blogitem";
 import FollowButton from "../../../../components/FollowButton";
 import Link from "next/link";
+import { useLoading } from "../../../../components/LoadingProvider";
 
 export default function UserProfilePage() {
   const { id } = useParams();
   const { data: session } = useSession();
   const router = useRouter();
+  const { startLoading, stopLoading } = useLoading();
 
   type User = {
     _id: string;
@@ -23,13 +25,13 @@ export default function UserProfilePage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [blogs, setBlogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showDrawer, setShowDrawer] = useState(false);
   const [drawerType, setDrawerType] = useState("followers");
   const [drawerUsers, setDrawerUsers] = useState<User[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
+      startLoading(); // ✅ Start global loader
       try {
         const res = await fetch(`/api/profile/${id}`);
         const data = await res.json();
@@ -40,7 +42,7 @@ export default function UserProfilePage() {
       } catch (err) {
         console.error("Failed to load profile", err);
       } finally {
-        setLoading(false);
+        stopLoading(); // ✅ Stop global loader
       }
     };
 
@@ -96,6 +98,11 @@ export default function UserProfilePage() {
               src={user.image}
               alt={user.name}
               className="w-24 h-24 rounded-full object-cover mx-auto sm:mx-0"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.onerror = null;
+                target.src = "/profileimage.jpg";
+              }}
             />
           )}
 

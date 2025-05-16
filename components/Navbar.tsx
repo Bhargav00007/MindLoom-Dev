@@ -34,18 +34,20 @@ export const Navbar = () => {
             <>
               <button
                 type="button"
-                className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                className="flex cursor-pointer text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 hover:ring-4 hover:ring-gray-800 dark:focus:ring-gray-600"
                 aria-expanded={isDropdownOpen ? "true" : "false"}
                 onClick={toggleDropdown}
               >
-                <span className="sr-only">Open user menu</span>
+                <span className="sr-only cursor-pointer">Open user menu</span>
                 <img
-                  src={
-                    (session.user?.image as string) ||
-                    "/assets/profileimage.jpg"
-                  }
-                  alt=" "
+                  src={(session.user?.image as string) || "/profileimage.jpg"}
+                  alt="User"
                   className="rounded-full h-10 w-10 border-2 border-black"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.onerror = null; // Prevent infinite fallback loop
+                    target.src = "/profileimage.jpg";
+                  }}
                 />
               </button>
 

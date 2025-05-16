@@ -85,7 +85,7 @@ const BlogLikeButton = ({ blogId }: Props) => {
       ) : (
         <FaRegHeart className="text-gray-500" />
       )}
-      <span className="text-black">{likesCount}</span>
+      <span className="text-gray-500">{likesCount}</span>
     </button>
   );
 };
