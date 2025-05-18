@@ -66,11 +66,9 @@ const BlogList = () => {
 
   return (
     <>
-      <div className="">
-        <FollowingFeed />
-      </div>
+      <FollowingFeed />
       <div className="flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:m-20 m-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:mx-20 m-5">
           {blogs.map((blog) => (
             <BlogItem key={blog._id} blog={blog} />
           ))}

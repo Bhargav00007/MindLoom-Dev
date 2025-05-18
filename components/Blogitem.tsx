@@ -24,7 +24,6 @@ const BlogItem = ({ blog }: Props) => {
 
   if (!blog || !blog._id) return null;
 
-  // ✅ ADD THIS BLOCK RIGHT HERE:
   let hasUserLiked = false;
   if (currentUserId && Array.isArray(blog.likes)) {
     hasUserLiked = blog.likes.includes(currentUserId);
@@ -38,7 +37,7 @@ const BlogItem = ({ blog }: Props) => {
   });
 
   return (
-    <div className="flex flex-col w-full h-full rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-white">
+    <div className="flex flex-col w-full h-full rounded-lg overflow-hidden border border-gray-100  bg-white">
       {/* Image */}
       <div className="h-52 w-full overflow-hidden">
         <img
@@ -72,7 +71,7 @@ const BlogItem = ({ blog }: Props) => {
             <img
               src={blog.authorImage}
               alt={blog.authorName}
-              className="w-8 h-8 rounded-full object-cover border group-hover:border-blue-500 transition"
+              className="w-8 h-8 rounded-full object-cover  group-hover:border-blue-500 transition"
               onError={(e) => {
                 const target = e.currentTarget;
                 target.onerror = null;

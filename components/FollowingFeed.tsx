@@ -59,7 +59,7 @@ const FollowingFeed = () => {
     <div className="my-4 px-4">
       <button
         onClick={handleToggle}
-        className={`px-7 py-2 rounded-full text-white font-medium lg:ml-15  m-2 ${
+        className={`px-7 py-2 rounded-full text-white font-medium lg:ml-15  m-2 cursor-pointer ${
           showFollowing
             ? "bg-gray-400 hover:bg-gray-500"
             : "bg-gray-400 hover:bg-gray-500"

@@ -176,6 +176,16 @@ export const Navbar = () => {
               </Link>
             </li>
             <li>
+              <Link
+                href="/Top"
+                className={`block py-2 px-3 rounded hover:text-blue-300 ${
+                  isActive("/Top") ? "text-blue-500 glow" : "text-white"
+                } hover:bg-gray-700 md:hover:bg-transparent`}
+              >
+                Top
+              </Link>
+            </li>
+            <li>
               {session?.user?.id && (
                 <Link
                   href={`/profile/${session.user.id}`}
