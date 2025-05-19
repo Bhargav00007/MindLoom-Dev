@@ -191,7 +191,7 @@ export default function UserProfilePage() {
                     className="flex items-center gap-3 hover:bg-gray-100 p-2 rounded"
                   >
                     <img
-                      src={u.image || "/default-avatar.png"}
+                      src={u.image || "/profileimage.jpg"}
                       alt={u.name}
                       className="w-10 h-10 rounded-full object-cover"
                     />

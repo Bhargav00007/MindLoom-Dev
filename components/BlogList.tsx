@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import BlogItem from "./Blogitem";
 import { MoonLoader } from "react-spinners";
+import Navbar2 from "../components/Navbar2";
 import FollowingFeed from "./FollowingFeed";
 
 type Blog = {
@@ -12,14 +13,16 @@ type Blog = {
   imagePath: string;
   authorName: string;
   authorImage: string;
-  authorId: string; // ✅ Added authorId
+  authorId: string;
   createdAt: string;
+  category?: string;
 };
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -37,13 +40,11 @@ const BlogList = () => {
           setBlogs(result.data);
         } else {
           setError("Invalid data format received from server");
-          console.error("Unexpected data format:", result);
         }
       } catch (error) {
         setError(
           error instanceof Error ? error.message : "Failed to load blogs"
         );
-        console.error("Error fetching blogs:", error);
       } finally {
         setLoading(false);
       }
@@ -51,6 +52,14 @@ const BlogList = () => {
 
     fetchBlogs();
   }, []);
+
+  const filteredBlogs =
+    selectedCategory === "All"
+      ? blogs
+      : blogs.filter(
+          (blog) =>
+            blog.category?.toLowerCase() === selectedCategory.toLowerCase()
+        );
 
   if (loading) {
     return (
@@ -66,15 +75,24 @@ const BlogList = () => {
 
   return (
     <>
-      <FollowingFeed />
+      <Navbar2
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+      />
+
       <div className="flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:mx-20 m-5">
-          {blogs.map((blog) => (
-            <BlogItem key={blog._id} blog={blog} />
-          ))}
-        </div>
+        {selectedCategory === "Following" ? (
+          <FollowingFeed />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:mx-20 m-5">
+            {filteredBlogs.map((blog) => (
+              <BlogItem key={blog._id} blog={blog} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
 };
+
 export default BlogList;

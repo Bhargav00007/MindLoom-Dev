@@ -8,7 +8,7 @@ export function HeroSectionOne() {
   const router = useRouter();
 
   return (
-    <div className="pt-10">
+    <div className="lg:pt-5">
       <div className="relative mx-auto flex max-w-7xl py-20 px-4 sm:px-10 flex-col items-center justify-center bg-black">
         <Navbar />
 

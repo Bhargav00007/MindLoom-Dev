@@ -53,7 +53,7 @@ export const Navbar = () => {
 
               {/* Dropdown menu */}
               {isDropdownOpen && (
-                <div className="absolute top-14 right-4 mt-2 w-55 divide-y divide-gray-100 rounded-lg shadow-lg bg-gray-700 dark:divide-gray-600">
+                <div className="z-10 absolute top-14 right-4 mt-2 w-55 divide-y divide-gray-100 rounded-lg shadow-lg bg-gray-900 dark:divide-gray-600 opacity-100">
                   <div className="px-4 py-3">
                     <span className="block text-sm text-transparent dark:text-white">
                       {session.user?.name}

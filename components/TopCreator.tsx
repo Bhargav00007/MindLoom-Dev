@@ -56,11 +56,11 @@ const TopCreators = () => {
               <img
                 src={creator.image}
                 alt={creator.name}
-                className="w-20 h-20 rounded-full object-cover  mb-3 hover:scale-105 transition-transform"
+                className="w-24 h-24 rounded-full object-cover mx-auto sm:mx-0"
                 onError={(e) => {
                   const target = e.currentTarget;
                   target.onerror = null;
-                  target.src = "/default-avatar.png";
+                  target.src = "/profileimage.jpg";
                 }}
               />
             </Link>
