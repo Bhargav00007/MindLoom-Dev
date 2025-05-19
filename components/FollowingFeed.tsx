@@ -56,7 +56,7 @@ const FollowingFeed = () => {
     <div className="my-4 px-4">
       {error && <p className="text-red-500 mt-4">{error}</p>}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 lg:m-15 m-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 lg:m-25 m-2">
         {blogs.length > 0 ? (
           blogs.map((blog) => <BlogItem key={blog._id} blog={blog} />)
         ) : (

@@ -84,7 +84,7 @@ const BlogList = () => {
         {selectedCategory === "Following" ? (
           <FollowingFeed />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:mx-20 m-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:mx-30 m-5">
             {filteredBlogs.map((blog) => (
               <BlogItem key={blog._id} blog={blog} />
             ))}
