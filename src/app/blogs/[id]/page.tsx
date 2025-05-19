@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import CommentSection from "../../../../components/CommentSection";
 import React, { useEffect, useState } from "react";
 
 type Blog = {
@@ -40,7 +41,7 @@ const Page = () => {
     };
 
     fetchBlog();
-  }, [params]); // Use params as dependency
+  }, [params]);
 
   if (error)
     return <div className="text-center p-8 text-red-500">Error: {error}</div>;
@@ -97,6 +98,7 @@ const Page = () => {
           ))}
         </div>
       </article>
+      <CommentSection blogId={blog._id} />
     </div>
   );
 };

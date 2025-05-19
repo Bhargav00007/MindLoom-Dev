@@ -76,7 +76,7 @@ const BlogLikeButton = ({ blogId }: Props) => {
     <button
       onClick={toggleLike}
       disabled={isLoading}
-      className={`mt-4 flex items-center gap-2 px-4 py-2 bg-white rounded transition pb-7 ${
+      className={`flex items-center text-sm ${
         isLoading ? "opacity-50 cursor-not-allowed" : ""
       }`}
     >
@@ -85,7 +85,7 @@ const BlogLikeButton = ({ blogId }: Props) => {
       ) : (
         <FaRegHeart className="text-gray-500" />
       )}
-      <span className="text-gray-500">{likesCount}</span>
+      <span className="ml-1 text-gray-500">{likesCount}</span>
     </button>
   );
 };

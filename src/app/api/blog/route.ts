@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import connectDB from "../../../../lib/config/db";
 import BlogModel from "../../../../lib/models/blogmodel";
 import UserModel from "../../../../lib/models/user";
+import Comment from "../../../../lib/models/comment"; // ✅ Added for comment count
 import fs from "fs";
 import path from "path";
 
@@ -17,6 +18,7 @@ interface BlogPost {
   imagePath: string;
   createdAt: Date;
   updatedAt: Date;
+  commentCount?: number; // ✅ Include this
 }
 
 interface BlogResponse {
@@ -143,14 +145,20 @@ export async function GET(): Promise<NextResponse<BlogResponse>> {
       .sort({ createdAt: -1 })
       .lean<BlogPost[]>();
 
-    const responseData = blogs.map((blog) => ({
-      ...blog,
-      _id: blog._id.toString(),
-    }));
+    const blogsWithCounts = await Promise.all(
+      blogs.map(async (blog) => {
+        const commentCount = await Comment.countDocuments({ blogId: blog._id });
+        return {
+          ...blog,
+          _id: blog._id.toString(),
+          commentCount,
+        };
+      })
+    );
 
     return NextResponse.json({
       success: true,
-      data: responseData,
+      data: blogsWithCounts,
     });
   } catch (error) {
     console.error("Error fetching blogs:", error);

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import BlogLikeButton from "./BlogLikeButton";
+import { FaRegComment } from "react-icons/fa";
 
 type Props = {
   blog: {
@@ -15,6 +16,7 @@ type Props = {
     authorId: string;
     createdAt: string;
     likes?: string[];
+    commentCount?: number; // ✅ Add this to show comment count
   };
 };
 
@@ -37,7 +39,7 @@ const BlogItem = ({ blog }: Props) => {
   });
 
   return (
-    <div className="flex flex-col w-full h-full rounded-lg overflow-hidden border border-gray-100  bg-white">
+    <div className="flex flex-col w-full h-full rounded-lg overflow-hidden border border-gray-100 bg-white">
       {/* Image */}
       <div className="h-52 w-full overflow-hidden">
         <img
@@ -63,7 +65,8 @@ const BlogItem = ({ blog }: Props) => {
         </div>
 
         {/* Bottom section */}
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex items-center justify-between mt-4">
+          {/* Author info (left side) — keep as is */}
           <Link
             href={`/profile/${blog.authorId}`}
             className="flex items-center gap-2 group"
@@ -71,23 +74,30 @@ const BlogItem = ({ blog }: Props) => {
             <img
               src={blog.authorImage}
               alt={blog.authorName}
-              className="w-8 h-8 rounded-full object-cover  group-hover:border-blue-500 transition"
+              className="w-8 h-8 rounded-full object-cover transition"
               onError={(e) => {
                 const target = e.currentTarget;
                 target.onerror = null;
                 target.src = "/profileimage.jpg";
               }}
             />
-
             <div>
-              <p className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition">
+              <p className="text-sm font-medium text-gray-800 transition">
                 {blog.authorName}
               </p>
               <p className="text-xs text-gray-500">{formattedDate}</p>
             </div>
           </Link>
+          <div className="flex items-center text-gray-600 text-sm">
+            <div className="flex items-center mr-2">
+              <FaRegComment size={15} className="text-gray-500" />
+              <span className="ml-1">{blog.commentCount ?? 0}</span>
+            </div>
 
-          <BlogLikeButton blogId={blog._id} />
+            <div className="flex items-center">
+              <BlogLikeButton blogId={blog._id} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
