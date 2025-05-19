@@ -28,7 +28,6 @@ const BlogLikeButton = ({ blogId }: Props) => {
         }
 
         const likes = Array.isArray(result.data.likes) ? result.data.likes : [];
-
         setLikesCount(likes.length);
         setLiked(userId ? likes.includes(userId) : false);
       } catch (err) {
@@ -76,16 +75,16 @@ const BlogLikeButton = ({ blogId }: Props) => {
     <button
       onClick={toggleLike}
       disabled={isLoading}
-      className={`flex items-center text-sm ${
-        isLoading ? "opacity-50 cursor-not-allowed" : ""
+      className={`flex items-center text-sm transition ${
+        isLoading ? "opacity-50" : "cursor-pointer"
       }`}
     >
       {liked ? (
-        <FaHeart className="text-red-500" />
+        <FaHeart size={20} className="text-red-500" />
       ) : (
-        <FaRegHeart className="text-gray-500" />
+        <FaRegHeart size={20} className="text-gray-500" />
       )}
-      <span className="ml-1 text-gray-500">{likesCount}</span>
+      <span className="ml-2 text-gray-600 text-base">{likesCount}</span>
     </button>
   );
 };

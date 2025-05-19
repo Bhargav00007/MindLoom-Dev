@@ -90,7 +90,7 @@ const BlogItem = ({ blog }: Props) => {
           </Link>
           <div className="flex items-center text-gray-600 text-sm">
             <div className="flex items-center mr-2">
-              <FaRegComment size={15} className="text-gray-500" />
+              <FaRegComment size={20} className="text-gray-500" />
               <span className="ml-1">{blog.commentCount ?? 0}</span>
             </div>
 
