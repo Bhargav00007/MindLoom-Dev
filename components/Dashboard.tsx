@@ -3,7 +3,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
-import { SiGithub, SiLinkedin } from "react-icons/si";
+import { SiGithub, SiLinkedin, SiOnlyfans } from "react-icons/si";
 
 const Dashboard = () => {
   const { data: session } = useSession();
@@ -65,6 +65,13 @@ const Dashboard = () => {
               LinkedIn
             </button>
 
+            <button
+              onClick={() => signIn("onlyfans")}
+              className="w-full flex items-center justify-center px-6 py-2 bg-[#00aeef] text-white shadow-md rounded-lg hover:bg-[#00aeef]/80 transition-all"
+            >
+              <SiOnlyfans className="mr-1" />
+              OnlyFans
+            </button>
             <button
               onClick={() => signIn("github")}
               className="w-full flex items-center justify-center px-6 py-2 bg-black text-white shadow-md rounded-lg hover:bg-black/80 transition-all"
