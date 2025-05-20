@@ -39,7 +39,7 @@ export const Navbar = () => {
       <div className="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between p-4">
         {/* Logo + Brand */}
         <Link href="/" className="flex items-center">
-          <img src="/logo.png" alt="logo" className="h-8 w-8 mr-2" />
+          {/* <img src="/logo.png" alt="logo" className="h-8 w-8 mr-2" /> */}
           <span className="text-2xl font-semibold text-white font-poppins">
             MindLoom
           </span>

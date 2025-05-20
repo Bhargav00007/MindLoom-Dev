@@ -3,49 +3,74 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
-import { SiGithub } from "react-icons/si";
+import { SiGithub, SiLinkedin } from "react-icons/si";
 
 const Dashboard = () => {
   const { data: session } = useSession();
 
   return (
-    <div className="px-5 ">
+    <div className="flex flex-col items-center justify-center mt-20 px-4 text-center">
       {session ? (
         <>
           <img
-            src={session.user?.image as string}
-            className="rounded-full h-20 w-20 border"
-          ></img>
-          <h1 className="lg:text-3xl text-2xl text-green-500 font-bold">
+            src={(session.user?.image as string) || "/profileimage.jpg"}
+            alt="Profile"
+            className="rounded-full h-24 w-24 border mb-4 object-cover"
+            onError={(e) => {
+              const target = e.currentTarget;
+              target.onerror = null;
+              target.src = "/profileimage.jpg";
+            }}
+          />
+          <h1 className="text-2xl lg:text-3xl font-bold text-green-500 mb-2">
             Hey There, {session.user?.name}
           </h1>
-          <p className="lg:text-2xl text-xl font-semibold">
+          <p className="text-lg lg:text-xl font-medium text-gray-700 mb-4">
             {session.user?.email}
           </p>
           <button
             onClick={() => signOut()}
-            className="border  bg-rose-400 px-5 py-1 my-2 hover:bg-transparent transition-all duration-300 rounded-lg"
+            className="px-6 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-all"
           >
             Sign Out
           </button>
         </>
       ) : (
         <>
-          <h1 className="lg:text-3xl text-2xl text-red-500  font-bold m-5">
-            You&apos;re not logged in
+          <h1 className="text-4xl lg:text-5xl font-bold text-[#0B0A32] mb-4">
+            Welcome to MindLoom
           </h1>
-          <div className="flex space-x-5">
+          <img
+            src="/profileimage.jpg"
+            alt="Profile Placeholder"
+            className="h-28 w-28 rounded-full shadow-lg mb-6"
+          />
+          <div className="space-y-4 w-full max-w-xs">
+            <p className="text-lg text-gray-700">Sign in with</p>
+            <hr className="text-gray-400" />
+
             <button
               onClick={() => signIn("google")}
-              className="border  rounded-full px-10 py-1 bg-gray-300 hover:bg-gray-100 transition-all duration-300"
+              className="w-full flex items-center justify-center px-6 py-2 bg-gray-100 shadow-md rounded-lg hover:bg-gray-200 transition-all"
             >
-              Sign in <FcGoogle className="inline-flex ml-1 mb-1" />
+              <FcGoogle className="mr-2" />
+              Google
             </button>
+
+            <button
+              onClick={() => signIn("linkedin")}
+              className="w-full flex items-center justify-center px-6 py-2 bg-[#0077b5] text-white shadow-md rounded-lg hover:bg-[#005f91] transition-all"
+            >
+              <SiLinkedin className="mr-2" />
+              LinkedIn
+            </button>
+
             <button
               onClick={() => signIn("github")}
-              className="border  rounded-full bg-green-500 px-10 py-1 hover:bg-gray-100 transition-all duration-300"
+              className="w-full flex items-center justify-center px-6 py-2 bg-black text-white shadow-md rounded-lg hover:bg-black/80 transition-all"
             >
-              Sign in <SiGithub className="inline-flex ml-1 mb-1" />
+              <SiGithub className="mr-2" />
+              GitHub
             </button>
           </div>
         </>
