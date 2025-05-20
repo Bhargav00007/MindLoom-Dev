@@ -214,13 +214,10 @@ const Page = () => {
 
       {/* Blog Content */}
       <article className="prose lg:prose-xl max-w-4xl w-full lg:mx-40">
-        <div className="text-gray-600 leading-relaxed">
-          {blog.description.split("\n").map((para, index) => (
-            <p key={index} className="mb-4">
-              {para}
-            </p>
-          ))}
-        </div>
+        <div
+          className="text-gray-700 leading-relaxed prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: blog.description }}
+        />
       </article>
 
       {/* Comments */}

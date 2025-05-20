@@ -56,7 +56,10 @@ const BlogItem = ({ blog }: Props) => {
         </h2>
 
         <div className="text-gray-700 text-sm">
-          <p className="line-clamp-3">{blog.description}</p>
+          <div
+            className=" line-clamp-3 text-gray-700 leading-relaxed prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: blog.description }}
+          />
           <Link href={`/blogs/${blog._id}`}>
             <span className="text-blue-600 text-sm hover:underline cursor-pointer">
               Read more

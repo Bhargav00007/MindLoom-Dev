@@ -1,9 +1,9 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 type Props = {
   blogId: string;
@@ -29,22 +29,26 @@ const BlogLikeButton = ({ blogId }: Props) => {
 
         const likes = Array.isArray(result.data.likes) ? result.data.likes : [];
         setLikesCount(likes.length);
-        setLiked(userId ? likes.includes(userId) : false);
+
+        if (userId) {
+          setLiked(likes.includes(userId));
+        }
       } catch (err) {
         console.error("Failed to fetch likes:", err);
       }
     };
 
-    if (blogId && userId) fetchLikes();
+    if (blogId) fetchLikes();
   }, [blogId, userId]);
 
   const toggleLike = async () => {
     if (!userId) {
-      toast.error("Please sign in first");
+      toast.error("Please sign in to like this post.");
       return;
     }
 
     if (isLoading) return;
+
     setIsLoading(true);
 
     try {
@@ -59,13 +63,9 @@ const BlogLikeButton = ({ blogId }: Props) => {
       if (res.ok) {
         setLikesCount(typeof data.likes === "number" ? data.likes : 0);
         setLiked(data.liked);
-        toast.success(data.liked ? "Liked!" : "Unliked");
-      } else {
-        toast.error(data.error || "Error updating like");
       }
     } catch (err) {
       console.error("Toggle like failed:", err);
-      toast.error("Unexpected error");
     } finally {
       setIsLoading(false);
     }

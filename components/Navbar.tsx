@@ -101,7 +101,7 @@ export const Navbar = () => {
                     <li>
                       <button
                         onClick={() => signOut()}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-600"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-600 mb-2"
                       >
                         Sign Out
                       </button>
@@ -111,12 +111,12 @@ export const Navbar = () => {
               )}
             </div>
           ) : (
-            <button
-              onClick={() => signIn("google")}
+            <Link
+              href="/signin"
               className="order-1 md:order-2 px-3 py-1 bg-rose-900 text-white rounded hover:bg-rose-600"
             >
               Sign in
-            </button>
+            </Link>
           )}
 
           {/* Hamburger Button */}

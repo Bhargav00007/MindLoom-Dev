@@ -5,3 +5,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* Remove default outline/focus ring from TipTap editor */
+.ProseMirror:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.ProseMirror {
+  min-height: 300px;
+  padding: 0.5rem;
+  outline: none;
+  cursor: text;
+}
