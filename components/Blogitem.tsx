@@ -16,7 +16,7 @@ type Props = {
     authorId: string;
     createdAt: string;
     likes?: string[];
-    commentCount?: number; // ✅ Add this to show comment count
+    commentCount?: number;
   };
 };
 

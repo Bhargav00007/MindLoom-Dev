@@ -10,6 +10,7 @@ import {
   FaRegPauseCircle,
 } from "react-icons/fa";
 import Link from "next/link";
+import { MoonLoader } from "react-spinners";
 
 type Blog = {
   _id: string;
@@ -94,7 +95,7 @@ const Page = () => {
       return;
     }
 
-    speech.cancel(); // cancel any existing
+    speech.cancel();
 
     const utterance = new SpeechSynthesisUtterance(
       `${blog.title}. ${blog.description}`
@@ -132,7 +133,9 @@ const Page = () => {
 
   if (!blog)
     return (
-      <div className="text-center p-8 animate-pulse">Loading blog post...</div>
+      <div className="flex items-center justify-center h-[400px]">
+        <MoonLoader size={40} color="#e11d48" />
+      </div>
     );
 
   const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
@@ -144,14 +147,14 @@ const Page = () => {
   return (
     <div className="flex flex-col items-center p-6 max-w-4xl mx-auto w-full">
       {/* Title */}
-      <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">
+      <h1 className="text-3xl md:text-4xl font-bold mb-2 text-start">
         {blog.title}
       </h1>
 
       {/* Author section - centered and clickable */}
       <Link
         href={`/profile/${blog.authorId}`}
-        className="flex items-center gap-4 mb-2 hover:bg-gray-50 px-4 py-2 transition"
+        className="flex items-center gap-4 mb-2  px-4 py-2 transition"
       >
         <img
           src={blog.authorImage}

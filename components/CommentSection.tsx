@@ -75,7 +75,7 @@ const CommentSection = ({ blogId }: { blogId: string }) => {
             />
             <button
               onClick={handleSubmit}
-              className="bg-pink-600 text-white px-5 py-2 rounded hover:bg-pink-700 transition"
+              className="bg-pink-600 text-white px-5 py-1 rounded hover:bg-pink-700 transition"
             >
               Post
             </button>

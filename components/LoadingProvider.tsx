@@ -27,7 +27,7 @@ export default function LoadingProvider({ children }: { children: ReactNode }) {
       {children}
       {isLoading && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/70 backdrop-blur-sm">
-          <MoonLoader size={40} color="#e11d48" />
+          <MoonLoader size={40} color="#0B0A32" />
         </div>
       )}
     </LoadingContext.Provider>

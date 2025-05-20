@@ -29,14 +29,14 @@ const Navbar2: React.FC<Navbar2Props> = ({
               onClick={() => onSelectCategory(category)}
               className={` cursor-pointer px-4 pb-2 text-sm font-medium transition-colors duration-150 ${
                 selectedCategory === category
-                  ? "border-b-2 border-pink-600 text-pink-600"
+                  ? "border-b-2 border-[#0B0A32] text-[#0B0A32]"
                   : "text-gray-700 hover:text-pink-600"
               }`}
             >
               {category}
             </button>
             {index < categories.length - 1 && (
-              <div className="h-4 border-l border-gray-300 mx-2" />
+              <div className="h-4 border-l border-gray-400 mx-2" />
             )}
           </div>
         ))}
