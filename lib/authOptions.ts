@@ -1,7 +1,9 @@
 import { NextAuthOptions, User as AdapterUser } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import connectToDB from "../lib/config/db"; // adjust the path if needed
+import LinkedInProvider from "next-auth/providers/linkedin";
+
+import connectToDB from "../lib/config/db";
 import User from "../lib/models/user";
 
 // Extend the User interface to include the 'id' field
@@ -18,6 +20,11 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
+    LinkedInProvider({
+      // ✅ NEW
+      clientId: process.env.LINKEDIN_CLIENT_ID as string,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET as string,
     }),
   ],
   session: {
@@ -54,7 +61,7 @@ export const authOptions: NextAuthOptions = {
       const dbUser = await User.findOne({ email: token.email });
 
       if (dbUser) {
-        token.id = dbUser._id.toString(); // ✅ MongoDB ObjectId
+        token.id = dbUser._id.toString();
       }
 
       return token;
