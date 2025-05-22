@@ -114,13 +114,15 @@ export default function DeletePage() {
         {blogs.length > 0 ? (
           blogs.map((blog) => (
             <div key={blog._id} className="rounded-lg bg-white p-4 shadow">
-              <BlogItem blog={blog} />
-              <button
-                onClick={() => setConfirmId(blog._id)}
-                className="my-7  w-full text-sm text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg"
-              >
-                Delete
-              </button>
+              <div>
+                <BlogItem blog={blog} />
+                <button
+                  onClick={() => setConfirmId(blog._id)}
+                  className="  w-full text-sm text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg "
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))
         ) : (

@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaBold } from "react-icons/fa";
-import { FaItalic } from "react-icons/fa";
-import { FaUnderline } from "react-icons/fa";
-import { FaHighlighter } from "react-icons/fa";
-
+import { FaBold, FaItalic, FaUnderline, FaHighlighter } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { FileUpload } from "../../../components/ui/file-uplaod";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -15,6 +11,29 @@ import Italic from "@tiptap/extension-italic";
 import Underline from "@tiptap/extension-underline";
 import Highlight from "@tiptap/extension-highlight";
 import Placeholder from "@tiptap/extension-placeholder";
+import CodeBlock from "@tiptap/extension-code-block";
+import { ReactNodeViewRenderer } from "@tiptap/react";
+
+const CustomCodeBlock = ({ node }: any) => {
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(node.textContent);
+  };
+
+  return (
+    <div className="relative bg-black text-white rounded p-4 my-4 font-mono">
+      <div className="text-sm font-semibold mb-2">Code Block:</div>
+      <pre className="whitespace-pre-wrap overflow-x-auto">
+        <code>{node.textContent}</code>
+      </pre>
+      <button
+        onClick={copyToClipboard}
+        className="absolute top-2 right-2 bg-white text-black px-2 py-1 text-xs rounded hover:bg-gray-200"
+      >
+        Copy
+      </button>
+    </div>
+  );
+};
 
 const Create = () => {
   const [title, setTitle] = useState("");
@@ -25,11 +44,16 @@ const Create = () => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({ codeBlock: false }),
       Bold,
       Italic,
       Underline,
       Highlight,
+      CodeBlock.extend({
+        addNodeView() {
+          return ReactNodeViewRenderer(CustomCodeBlock);
+        },
+      }),
       Placeholder.configure({
         placeholder: "Write your blog content here...",
       }),
@@ -41,9 +65,19 @@ const Create = () => {
   });
 
   const handleFileUpload = (files: File[]) => {
-    if (files.length > 0) {
-      setThumbnail(files[0]);
+    const file = files[0];
+
+    if (files.length > 1) {
+      toast.error("Please upload only one image.");
+      return;
     }
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed.");
+      return;
+    }
+
+    setThumbnail(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,14 +121,10 @@ const Create = () => {
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-md mt-8">
       <h2 className="text-2xl font-bold mb-6 text-center">Create New Blog</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        {/* File Upload */}
-        <div>
-          <div className="w-full border border-dashed border-neutral-300 rounded-lg p-4 bg-black">
-            <FileUpload onChange={handleFileUpload} />
-          </div>
+        <div className="w-full border border-dashed border-neutral-300 rounded-lg p-4 bg-black">
+          <FileUpload onChange={handleFileUpload} />
         </div>
 
-        {/* Blog Title */}
         <div>
           <label className="block text-xl font-medium text-gray-700 mb-2">
             Title*
@@ -103,20 +133,18 @@ const Create = () => {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="block w-full text-xl rounded-md border  "
+            className="block w-full text-xl rounded-md border"
             required
           />
         </div>
 
-        {/* Blog Description */}
         <div>
           <label className="block text-xl font-medium text-gray-700 mb-2">
             Your Story*
           </label>
 
-          {/* Toolbar */}
           {editor && (
-            <div className="flex gap-2 mb-2">
+            <div className="flex gap-2 mb-2 flex-wrap">
               <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleBold().run()}
@@ -164,10 +192,7 @@ const Create = () => {
             </div>
           )}
 
-          <div
-            className="border border-gray-300 rounded-md bg-white min-h-[300px] max-h-[500px] overflow-y-auto p-2"
-            aria-placeholder="Write your blog content here..."
-          >
+          <div className="border border-gray-300 rounded-md bg-white min-h-[300px] max-h-[500px] overflow-y-auto p-2">
             {editor ? (
               <EditorContent
                 editor={editor}
@@ -179,7 +204,6 @@ const Create = () => {
           </div>
         </div>
 
-        {/* Blog Category */}
         <div>
           <label className="block text-xl font-medium text-gray-700 mb-1">
             Category*
@@ -187,7 +211,7 @@ const Create = () => {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="block w-full text-sm  rounded-md"
+            className="block w-full text-sm rounded-md"
           >
             <option value="Technology">Technology</option>
             <option value="Health">Health</option>
@@ -199,7 +223,6 @@ const Create = () => {
           </select>
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}

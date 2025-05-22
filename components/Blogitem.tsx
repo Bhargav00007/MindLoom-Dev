@@ -41,13 +41,16 @@ const BlogItem = ({ blog }: Props) => {
   return (
     <div className="flex flex-col w-full h-full rounded-lg overflow-hidden border border-gray-100 bg-white">
       {/* Image */}
-      <div className="h-52 w-full overflow-hidden">
+      <Link
+        href={`/blogs/${blog._id}`}
+        className="h-52 w-full overflow-hidden group block"
+      >
         <img
           src={blog.imagePath}
           alt={blog.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
         />
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="flex-1 p-4 flex flex-col justify-between">

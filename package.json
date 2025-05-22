@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^3.33.0",
+    "@tiptap/extension-code-block-lowlight": "^2.12.0",
     "@tiptap/extension-highlight": "^2.12.0",
+    "@tiptap/extension-link": "^2.12.0",
     "@tiptap/extension-placeholder": "^2.12.0",
     "@tiptap/extension-underline": "^2.12.0",
     "@tiptap/react": "^2.12.0",
@@ -18,6 +20,8 @@
     "axios": "^1.9.0",
     "clsx": "^2.1.1",
     "cobe": "^0.6.3",
+    "highlight.js": "^11.11.1",
+    "lowlight": "^3.3.0",
     "lucide-react": "^0.511.0",
     "mongoose": "^8.14.0",
     "motion": "^12.12.1",

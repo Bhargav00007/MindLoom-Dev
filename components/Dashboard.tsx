@@ -66,7 +66,7 @@ const Dashboard = () => {
             </button>
 
             <button
-              onClick={() => signIn("onlyfans")}
+              onClick={() => signIn("google")}
               className="w-full flex items-center justify-center px-6 py-2 bg-[#00aeef] text-white shadow-md rounded-lg hover:bg-[#00aeef]/80 transition-all"
             >
               <SiOnlyfans className="mr-1" />

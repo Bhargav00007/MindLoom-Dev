@@ -97,18 +97,28 @@ const Page = () => {
 
     speech.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(
-      `${blog.title}. ${blog.description}`
-    );
+    // Strip HTML tags from blog.description
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = blog.description;
+    const plainText = tempDiv.innerText || tempDiv.textContent || "";
+
+    const textToSpeak = `${blog.title}. ${plainText}`;
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
     const setVoice = () => {
       const voices = speech.getVoices();
-      const femaleVoice =
+      const preferredVoice =
         voices.find((v) =>
           /female|zira|samantha|google us english|woman/i.test(v.name)
         ) || voices[0];
 
-      if (femaleVoice) utterance.voice = femaleVoice;
+      if (preferredVoice) utterance.voice = preferredVoice;
+
+      utterance.rate = 1; // normal speed
+      utterance.pitch = 1; // natural pitch
+      utterance.lang = "en-US";
+
       speech.speak(utterance);
       synthRef.current = utterance;
       setIsSpeaking(true);
@@ -120,7 +130,6 @@ const Page = () => {
       };
     };
 
-    // If voices not loaded yet
     if (speech.getVoices().length === 0) {
       window.speechSynthesis.onvoiceschanged = setVoice;
     } else {
@@ -169,7 +178,7 @@ const Page = () => {
       </Link>
 
       {/* Interaction Icons: Listen / Comment / Like */}
-      <div className="flex items-center justify-center text-base text-gray-700 mb-4 gap-6">
+      <div className="flex items-center justify-center text-base text-gray-700 mb-4 gap-6 bg-white rounded-full px-4 py-2">
         {/* Listen */}
         <button
           onClick={handleToggleSpeech}
@@ -184,9 +193,9 @@ const Page = () => {
         </button>
 
         {/* Comment */}
-        <div className="flex items-center cursor-pointer">
+        <div className="flex items-center cursor-pointer ml-2">
           <FaRegComment size={20} className="text-gray-600" />
-          <span className="ml-1">{commentCount}</span>
+          <span className="ml-2">{commentCount}</span>
         </div>
 
         {/* Like */}
