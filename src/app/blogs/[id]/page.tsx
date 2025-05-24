@@ -212,11 +212,11 @@ const Page = () => {
       </div>
 
       {/* Blog Image (no rounded or shadow) */}
-      <div className="w-full md:w-[100%] mb-8">
+      <div className="lg:w-[60%] w-full  mb-8">
         <img
           src={blog.imagePath}
           alt={blog.title}
-          className="w-full h-auto max-h-[400px] object-cover"
+          className="w-full h-auto max-h-full object-cover"
           loading="lazy"
         />
       </div>

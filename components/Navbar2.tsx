@@ -16,7 +16,7 @@ const categories = [
   "Travel",
   "Education",
   "Personal Growth",
-  "Stories",
+  "Stories & Poems",
   "Others",
 ];
 
