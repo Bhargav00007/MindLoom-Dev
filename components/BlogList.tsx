@@ -5,6 +5,7 @@ import BlogItem from "./Blogitem";
 import { MoonLoader } from "react-spinners";
 import Navbar2 from "../components/Navbar2";
 import FollowingFeed from "./FollowingFeed";
+import { PointerHighlight } from "../components/ui/pointer-highlight";
 
 type Blog = {
   _id: string;
@@ -84,6 +85,13 @@ const BlogList = () => {
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
       />
+      <div className="flex items-center justify-center mb-4">
+        <div className="max-w-lg lg:py-10 py-10 text-2xl text-black font-bold tracking-tight md:text-4xl text-center">
+          <PointerHighlight>
+            <span>Featured Blogs</span>
+          </PointerHighlight>
+        </div>
+      </div>
 
       <div className="flex justify-center">
         {selectedCategory === "Following" ? (
