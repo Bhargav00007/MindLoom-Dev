@@ -23,6 +23,7 @@ const BlogList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [visibleCount, setVisibleCount] = useState(21);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -61,6 +62,10 @@ const BlogList = () => {
             blog.category?.toLowerCase() === selectedCategory.toLowerCase()
         );
 
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + 21);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[400px]">
@@ -84,10 +89,21 @@ const BlogList = () => {
         {selectedCategory === "Following" ? (
           <FollowingFeed />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:mx-30 m-5">
-            {filteredBlogs.map((blog) => (
-              <BlogItem key={blog._id} blog={blog} />
-            ))}
+          <div className="flex flex-col items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:mx-30 m-5">
+              {filteredBlogs.slice(0, visibleCount).map((blog) => (
+                <BlogItem key={blog._id} blog={blog} />
+              ))}
+            </div>
+
+            {visibleCount < filteredBlogs.length && (
+              <button
+                onClick={handleLoadMore}
+                className="my-6 px-6 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition"
+              >
+                Load More
+              </button>
+            )}
           </div>
         )}
       </div>

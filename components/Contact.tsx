@@ -46,7 +46,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6  rounded-lg shadow-md">
+    <div className="max-w-xl mx-auto p-6  rounded-xl shadow-md">
       {!submitted ? (
         <>
           <h2 className="text-2xl font-bold mb-4 text-neutral-200">
@@ -63,7 +63,7 @@ const Contact = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="border border-gray-300 p-3 rounded"
+              className="border border-gray-300 p-3 rounded-xl"
             />
             <input
               type="email"
@@ -72,7 +72,7 @@ const Contact = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="border border-gray-300 p-3 rounded"
+              className="border border-gray-300 p-3 rounded-xl"
             />
             <textarea
               name="message"
@@ -81,7 +81,7 @@ const Contact = () => {
               onChange={handleChange}
               required
               rows={4}
-              className="border border-gray-300 p-3 rounded resize-none"
+              className="border border-gray-300 p-3 rounded-xl resize-none"
             ></textarea>
             <div className="flex justify-center">
               <button

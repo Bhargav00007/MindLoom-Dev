@@ -41,8 +41,11 @@ const Dashboard = () => {
         <>
           <div className="mx-10 lg:mx-auto max-w-lg lg:pb-10 pb-7 -mt-10   text-2xl  font-bold tracking-tight md:text-4xl">
             Welcome to
-            <PointerHighlight>
-              <span>MindLoom Blogs</span>
+            <PointerHighlight
+              rectangleClassName="bg-neutral-400 border-neutral-400"
+              pointerClassName="text-yellow-500"
+            >
+              <span className="relative z-10">MindLoom Blogs</span>
             </PointerHighlight>
           </div>
           <img

@@ -222,9 +222,9 @@ const Page = () => {
       </div>
 
       {/* Blog Content */}
-      <article className="prose lg:prose-xl max-w-4xl w-full lg:mx-40">
+      <article className="prose lg:prose-xl max-w-4xl w-full lg:mx-60">
         <div
-          className="text-gray-700 leading-relaxed prose max-w-none"
+          className="text-gray-700 leading-relaxed prose max-w-none lg:mx-20 lg:my-10 mx-5 my-5"
           dangerouslySetInnerHTML={{ __html: blog.description }}
         />
       </article>

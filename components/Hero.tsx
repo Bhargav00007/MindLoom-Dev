@@ -22,11 +22,14 @@ export function HeroSectionOne() {
 
         {/* Content */}
         <div className="px-4 md:py-10">
-          <div className="mx-15 lg:mx-80 max-w-lg lg:py-10 py-10 text-2xl text-neutral-400 font-bold tracking-tight md:text-4xl">
-            <PointerHighlight>
-              <span>MindLoom Blogs</span>
-            </PointerHighlight>
+          <div className="flex items-center justify-center mb-4">
+            <div className="max-w-lg lg:py-10 py-10 text-2xl text-neutral-400 font-bold tracking-tight md:text-4xl text-center">
+              <PointerHighlight>
+                <span>MindLoom Blogs</span>
+              </PointerHighlight>
+            </div>
           </div>
+
           <h1 className="relative z-10 mx-auto max-w-4xl text-center text-4xl sm:text-3xl md:text-4xl lg:text-7xl font-bold text-slate-300">
             {"Where Thoughts Become Threads of Innovation."
               .split(" ")

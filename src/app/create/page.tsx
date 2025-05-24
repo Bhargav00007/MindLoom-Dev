@@ -65,15 +65,17 @@ const Create = () => {
   });
 
   const handleFileUpload = (files: File[]) => {
-    const file = files[0];
-
-    if (files.length > 1) {
+    if (files.length !== 1) {
       toast.error("Please upload only one image.");
+      setThumbnail(null);
       return;
     }
 
+    const file = files[0];
+
     if (!file.type.startsWith("image/")) {
       toast.error("Only image files are allowed.");
+      setThumbnail(null);
       return;
     }
 
@@ -84,7 +86,7 @@ const Create = () => {
     e.preventDefault();
 
     if (!thumbnail) {
-      toast.error("Please upload a thumbnail image.");
+      toast.error("Please upload a valid thumbnail image.");
       return;
     }
 
@@ -106,6 +108,13 @@ const Create = () => {
 
       if (response.ok) {
         toast.success("Blog created successfully!");
+
+        // Reset form
+        setTitle("");
+        setCategory("Technology");
+        setThumbnail(null);
+        setDescription("<p></p>");
+        editor?.commands.setContent("<p></p>");
       } else {
         toast.error(data.msg || "Please Sign In before you create!");
       }
@@ -118,7 +127,7 @@ const Create = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-md mt-8">
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-md mt-8 my-10">
       <h2 className="text-2xl font-bold mb-6 text-center">Create New Blog</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="w-full border border-dashed border-neutral-300 rounded-lg p-4 bg-black">
@@ -223,13 +232,15 @@ const Create = () => {
           </select>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md mt-20"
-        >
-          {loading ? "Adding New Blog..." : "Create Blog"}
-        </button>
+        <div className="flex items-center justify-center mt-10">
+          <button
+            type="submit"
+            disabled={loading}
+            className="items-center justify-center cursor-pointer w-full transform rounded-lg border border-gray-300 px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5 border-gray-700 bg-gray-100 text-black hover:bg-gray-200"
+          >
+            {loading ? "Adding New Blog..." : "Create Blog"}
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -7,6 +7,7 @@ import { Navbar } from "../../components/Navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingProvider from "../../components/LoadingProvider";
+import NextTopLoader from "nextjs-toploader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,8 @@ export default function RootLayout({
       >
         <SessionWrapper>
           <LoadingProvider>
+            <NextTopLoader color="#a1a1a1" showSpinner={false} />
+
             <Navbar />
             {children}
           </LoadingProvider>

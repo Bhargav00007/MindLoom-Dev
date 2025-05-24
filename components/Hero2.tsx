@@ -22,7 +22,7 @@ export function HeroScroll() {
           <img
             src="/illus.png"
             alt="hero"
-            className="absolute top-[-80px] left-0 w-full h-full object-cover object-left-top rounded-2xl"
+            className="absolute top-[-80px] left-0 w-full h-full object-cover object-left-top rounded-2xl items-center justify-center"
             draggable={false}
           />
         </div>
