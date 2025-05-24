@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { FaBold, FaItalic, FaUnderline, FaHighlighter } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { FileUpload } from "../../../components/ui/file-uplaod";
@@ -241,6 +242,12 @@ const Create = () => {
             {loading ? "Adding New Blog..." : "Create Blog"}
           </button>
         </div>
+        <Link
+          href="/Home"
+          className="underline text-blue-500 hover:text-blue-700 mt-4 text-center"
+        >
+          Home
+        </Link>
       </form>
     </div>
   );

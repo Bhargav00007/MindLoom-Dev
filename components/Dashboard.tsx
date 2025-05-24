@@ -6,6 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 import { PointerHighlight } from "../components/ui/pointer-highlight";
 
 import { SiGithub, SiLinkedin, SiOnlyfans } from "react-icons/si";
+import Link from "next/link";
 
 const Dashboard = () => {
   const { data: session } = useSession();
@@ -36,6 +37,12 @@ const Dashboard = () => {
           >
             Sign Out
           </button>
+          <Link
+            href="/Home"
+            className="underline text-blue-500 hover:text-blue-700 mt-4"
+          >
+            Home
+          </Link>
         </>
       ) : (
         <>
