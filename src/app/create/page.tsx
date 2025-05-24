@@ -95,23 +95,43 @@ const Create = () => {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("category", category);
-      formData.append("image", thumbnail);
+      // Step 1: Upload to Cloudinary
+      const uploadForm = new FormData();
+      uploadForm.append("file", thumbnail);
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadForm,
+      });
+
+      const uploadData = await uploadRes.json();
+
+      if (!uploadRes.ok || !uploadData.success) {
+        throw new Error("Failed to upload image");
+      }
+
+      const imageUrl = uploadData.data.secure_url;
+
+      // Step 2: Submit blog data to backend
+      const blogData = {
+        title,
+        description,
+        category,
+        imagePath: imageUrl,
+      };
 
       const response = await fetch("/api/blog", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(blogData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         toast.success("Blog created successfully!");
-
-        // Reset form
         setTitle("");
         setCategory("Technology");
         setThumbnail(null);
@@ -131,7 +151,7 @@ const Create = () => {
   return (
     <>
       <div className="flex items-center justify-center mb-4">
-        <div className="max-w-lg lg:py-10 pt-10  text-2xl text-black font-bold tracking-tight md:text-4xl text-center">
+        <div className="max-w-lg lg:py-10 pt-10 text-2xl text-black font-bold tracking-tight md:text-4xl text-center">
           <PointerHighlight>
             <span>Create Your Own Post</span>
           </PointerHighlight>

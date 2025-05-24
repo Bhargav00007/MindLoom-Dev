@@ -3,11 +3,9 @@ import { getServerSession } from "next-auth";
 import connectDB from "../../../../lib/config/db";
 import BlogModel from "../../../../lib/models/blogmodel";
 import UserModel from "../../../../lib/models/user";
-import Comment from "../../../../lib/models/comment"; // ✅ Added for comment count
-import fs from "fs";
-import path from "path";
+import Comment from "../../../../lib/models/comment";
 
-// Define TypeScript interfaces
+// TypeScript interfaces
 interface BlogPost {
   _id: string;
   title: string;
@@ -18,7 +16,7 @@ interface BlogPost {
   imagePath: string;
   createdAt: Date;
   updatedAt: Date;
-  commentCount?: number; // ✅ Include this
+  commentCount?: number;
 }
 
 interface BlogResponse {
@@ -29,6 +27,7 @@ interface BlogResponse {
   error?: string;
 }
 
+// ✅ CREATE BLOG (POST)
 export async function POST(
   request: Request
 ): Promise<NextResponse<BlogResponse>> {
@@ -47,17 +46,14 @@ export async function POST(
 
     await connectDB();
 
-    const formData = await request.formData();
-    const title = formData.get("title")?.toString() || "";
-    const description = formData.get("description")?.toString() || "";
-    const category = formData.get("category")?.toString() || "";
-    const image = formData.get("image") as Blob | null;
+    const body = await request.json();
+    const { title, description, category, imagePath } = body;
 
     const missingFields = [];
     if (!title) missingFields.push("title");
     if (!description) missingFields.push("description");
     if (!category) missingFields.push("category");
-    if (!image) missingFields.push("image");
+    if (!imagePath) missingFields.push("imagePath");
 
     if (missingFields.length > 0) {
       return NextResponse.json(
@@ -82,19 +78,6 @@ export async function POST(
       );
     }
 
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    const uniqueFileName = `image_${Date.now()}.png`;
-    const filePath = path.join(uploadsDir, uniqueFileName);
-    if (!image) {
-      throw new Error("Image is null or undefined");
-    }
-    const buffer = Buffer.from(await image.arrayBuffer());
-    fs.writeFileSync(filePath, buffer);
-
     const newBlog = new BlogModel({
       title,
       description,
@@ -102,7 +85,7 @@ export async function POST(
       authorId: user._id,
       authorName: session.user.name || "Anonymous",
       authorImage: session.user.image || "",
-      imagePath: `/uploads/${uniqueFileName}`,
+      imagePath, // already a URL from Cloudinary
     });
 
     await newBlog.save();
@@ -137,6 +120,7 @@ export async function POST(
   }
 }
 
+// ✅ GET BLOGS
 export async function GET(): Promise<NextResponse<BlogResponse>> {
   try {
     await connectDB();
@@ -174,6 +158,7 @@ export async function GET(): Promise<NextResponse<BlogResponse>> {
   }
 }
 
+// ✅ DELETE BLOG
 export async function DELETE(
   request: Request
 ): Promise<NextResponse<BlogResponse>> {
@@ -227,11 +212,6 @@ export async function DELETE(
         },
         { status: 403 }
       );
-    }
-
-    const fullImagePath = path.join(process.cwd(), "public", blog.imagePath);
-    if (fs.existsSync(fullImagePath)) {
-      fs.unlinkSync(fullImagePath);
     }
 
     await BlogModel.findByIdAndDelete(blogId);
