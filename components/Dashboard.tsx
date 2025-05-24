@@ -5,7 +5,7 @@ import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { PointerHighlight } from "../components/ui/pointer-highlight";
 
-import { SiGithub, SiLinkedin, SiOnlyfans } from "react-icons/si";
+import { SiGithub, SiLinkedin, SiOnlyfans, SiInstagram } from "react-icons/si";
 import Link from "next/link";
 
 const Dashboard = () => {
@@ -86,6 +86,13 @@ const Dashboard = () => {
             >
               <SiOnlyfans className="mr-1" />
               OnlyFans
+            </button>
+            <button
+              onClick={() => signIn("instagram")}
+              className="w-full flex items-center justify-center px-6 py-2 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white shadow-md rounded-lg hover:opacity-90 transition-all"
+            >
+              <SiInstagram className="mr-2" />
+              Instagram
             </button>
             <button
               onClick={() => signIn("github")}

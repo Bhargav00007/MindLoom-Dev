@@ -18,7 +18,7 @@ export async function GET() {
         likes: blog.likes ?? [],
       }))
       .sort((a, b) => b.likes.length - a.likes.length)
-      .slice(0, 3);
+      .slice(0, 6);
 
     return NextResponse.json(sorted);
   } catch (error) {

@@ -2,6 +2,7 @@ import { NextAuthOptions, User as AdapterUser } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import LinkedInProvider from "next-auth/providers/linkedin";
+import InstagramProvider from "next-auth/providers/instagram";
 
 import connectToDB from "../lib/config/db";
 import User from "../lib/models/user";
@@ -22,6 +23,10 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     LinkedInProvider({
+      clientId: process.env.LINKEDIN_ID as string,
+      clientSecret: process.env.LINKEDIN_SECRET as string,
+    }),
+    InstagramProvider({
       clientId: process.env.LINKEDIN_ID as string,
       clientSecret: process.env.LINKEDIN_SECRET as string,
     }),

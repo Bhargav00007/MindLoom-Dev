@@ -50,7 +50,7 @@ const Contact = () => {
       {!submitted ? (
         <>
           <h2 className="text-2xl font-bold mb-4 text-neutral-200">
-            Contact The Owner
+            Contact The Developer
           </h2>
           <form
             onSubmit={handleSubmit}
