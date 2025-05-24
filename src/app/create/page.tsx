@@ -226,10 +226,11 @@ const Create = () => {
             <option value="Technology">Technology</option>
             <option value="Health">Health</option>
             <option value="Entertainment">Entertainment</option>
-            <option value="Food">Food</option>
             <option value="Travel">Travel</option>
             <option value="Education">Education</option>
+            <option value="Personal Growth">Stories</option>
             <option value="Personal Growth">Personal Growth</option>
+            <option value="Personal Growth">Others</option>
           </select>
         </div>
 

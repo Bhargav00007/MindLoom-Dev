@@ -10,10 +10,14 @@ type Navbar2Props = {
 const categories = [
   "All",
   "Following",
-  "Startup",
-  "Technology",
-  "Lifestyle",
   "Health",
+  "Technology",
+  "Entertainment",
+  "Travel",
+  "Education",
+  "Personal Growth",
+  "Stories",
+  "Others",
 ];
 
 const Navbar2: React.FC<Navbar2Props> = ({
