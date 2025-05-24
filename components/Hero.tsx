@@ -2,14 +2,14 @@
 
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
-import { HeroScroll } from "./Hero2";
+import { PointerHighlight } from "../components/ui/pointer-highlight";
 
 export function HeroSectionOne() {
   const router = useRouter();
 
   return (
-    <div className="lg:pt-5">
-      <div className="relative mx-auto flex max-w-7xl py-20 px-4 sm:px-10 flex-col items-center justify-center bg-black">
+    <div className="lg:pt-0">
+      <div className="relative mx-auto flex max-w-7xl py-10 px-4 sm:px-10 flex-col items-center justify-center bg-black">
         <Navbar />
 
         {/* Vertical borders */}
@@ -21,7 +21,12 @@ export function HeroSectionOne() {
         </div>
 
         {/* Content */}
-        <div className="px-4 py-10 md:py-20">
+        <div className="px-4 md:py-10">
+          <div className="mx-15 lg:mx-80 max-w-lg lg:py-10 py-10 text-2xl text-neutral-400 font-bold tracking-tight md:text-4xl">
+            <PointerHighlight>
+              <span>MindLoom Blogs</span>
+            </PointerHighlight>
+          </div>
           <h1 className="relative z-10 mx-auto max-w-4xl text-center text-4xl sm:text-3xl md:text-4xl lg:text-7xl font-bold text-slate-300">
             {"Where Thoughts Become Threads of Innovation."
               .split(" ")
@@ -62,20 +67,19 @@ export function HeroSectionOne() {
           >
             <button
               onClick={() => router.push("/Home")}
-              className="w-60 transform rounded-lg  px-6 py-2 font-medium  transition-all duration-300 hover:-translate-y-0.5  bg-white text-black hover:bg-gray-200"
+              className="cursor-pointer w-60 transform rounded-lg  px-6 py-2 font-medium  transition-all duration-300 hover:-translate-y-0.5  bg-white text-black hover:bg-gray-200"
             >
               Explore Now
             </button>
             <button
               onClick={() => router.push("/signin")}
-              className="w-60 transform rounded-lg border border-gray-300  px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5  border-gray-700 bg-black text-white hover:bg-gray-900"
+              className=" cursor-pointer w-60 transform rounded-lg border border-gray-300  px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5  border-gray-700 bg-black text-white hover:bg-gray-900"
             >
               Sign In
             </button>
           </motion.div>
         </div>
       </div>
-      <HeroScroll />
     </div>
   );
 }

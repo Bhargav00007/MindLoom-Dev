@@ -3,6 +3,8 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
+import { PointerHighlight } from "../components/ui/pointer-highlight";
+
 import { SiGithub, SiLinkedin, SiOnlyfans } from "react-icons/si";
 
 const Dashboard = () => {
@@ -37,9 +39,12 @@ const Dashboard = () => {
         </>
       ) : (
         <>
-          <h1 className="text-4xl lg:text-5xl font-bold text-[#0B0A32] mb-4">
-            Welcome to MindLoom
-          </h1>
+          <div className="mx-10 lg:mx-auto max-w-lg lg:pb-10 pb-7 -mt-10   text-2xl  font-bold tracking-tight md:text-4xl">
+            Welcome to
+            <PointerHighlight>
+              <span>MindLoom Blogs</span>
+            </PointerHighlight>
+          </div>
           <img
             src="/profileimage.jpg"
             alt="Profile Placeholder"
