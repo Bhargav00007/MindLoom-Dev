@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import BlogItem from "../../../components/Blogitem";
 import { toast } from "react-toastify";
+import { MoonLoader } from "react-spinners";
 
 type Blog = {
   _id: string;
@@ -85,11 +86,11 @@ export default function DeletePage() {
     }
   };
 
-  if (loading) return <p>Loading your blogs...</p>;
+  if (loading) return <MoonLoader />;
   if (!user) return <p>User not found</p>;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="max-w-6xl mx-auto px-4 py-6 mt-10">
       <div className="flex items-center gap-4 mb-6">
         {user?.image && (
           <img
@@ -126,7 +127,9 @@ export default function DeletePage() {
             </div>
           ))
         ) : (
-          <p className="text-gray-500">You haven't posted any blogs yet.</p>
+          <p className="text-gray-500">
+            You have nothing to delete, Create a post first!
+          </p>
         )}
       </div>
 

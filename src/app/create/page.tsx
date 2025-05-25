@@ -15,6 +15,7 @@ import Highlight from "@tiptap/extension-highlight";
 import Placeholder from "@tiptap/extension-placeholder";
 import CodeBlock from "@tiptap/extension-code-block";
 import { ReactNodeViewRenderer } from "@tiptap/react";
+import { MoonLoader } from "react-spinners";
 
 const CustomCodeBlock = ({ node }: any) => {
   const copyToClipboard = () => {
@@ -268,7 +269,7 @@ const Create = () => {
               disabled={loading}
               className="items-center justify-center cursor-pointer w-full transform rounded-lg border border-gray-300 px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5 border-gray-700 bg-gray-100 text-black hover:bg-gray-200"
             >
-              {loading ? "Adding New Blog..." : "Create Blog"}
+              {loading ? <MoonLoader /> : "Create Blog"}
             </button>
           </div>
           <Link
