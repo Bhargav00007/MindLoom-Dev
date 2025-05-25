@@ -86,11 +86,16 @@ export default function DeletePage() {
     }
   };
 
-  if (loading) return <MoonLoader />;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-[400px]">
+        <MoonLoader size={40} color="#e11d48" />
+      </div>
+    );
   if (!user) return <p>User not found</p>;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 mt-10">
+    <div className="max-w-6xl mx-auto px-4 py-6 ">
       <div className="flex items-center gap-4 mb-6">
         {user?.image && (
           <img

@@ -267,11 +267,18 @@ const Create = () => {
             <button
               type="submit"
               disabled={loading}
-              className="items-center justify-center cursor-pointer w-full transform rounded-lg border border-gray-300 px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5 border-gray-700 bg-gray-100 text-black hover:bg-gray-200"
+              className="flex items-center justify-center w-full cursor-pointer transform rounded-lg border border-gray-300 px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5 border-gray-700 bg-gray-100 hover:bg-gray-200"
             >
-              {loading ? <MoonLoader /> : "Create Blog"}
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <MoonLoader size={20} color="#0B0A32" />
+                </div>
+              ) : (
+                "Create Blog"
+              )}
             </button>
           </div>
+
           <Link
             href="/Home"
             className="underline text-blue-500 hover:text-blue-700 mt-4 text-center"
