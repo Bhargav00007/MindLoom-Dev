@@ -26,7 +26,7 @@ export default function Showreel() {
   return (
     <div className="relative">
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white rounded-lg my-30">
+        <div className="absolute inset-0 flex items-center justify-center bg-white rounded-lg  mb-20 mt-10 my-20">
           <Loading />
         </div>
       )}
