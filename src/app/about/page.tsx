@@ -117,6 +117,8 @@ const About = () => {
           <li>React Icons</li>
           <li>React Spinners</li>
           <li>TipTap</li>
+          <li>React Toastify</li>
+          <li>Cloudinary</li>
         </ul>
 
         <h1 className="lg:text-4xl text-2xl font-bold underline decoration-neutral-500 mt-10 lg:mt-20">
