@@ -1,0 +1,9 @@
+# *Add commentMore actions
+User-agent: *
+Allow: /
+
+# HostAdd commentMore actions
+Host: https://mindloomblogs.vercel.app
+
+# Sitemaps
+Sitemap: https://mindloomblogs.vercel.app/sitemap.xml
