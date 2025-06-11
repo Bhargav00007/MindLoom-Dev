@@ -7,7 +7,6 @@ import InstagramProvider from "next-auth/providers/instagram";
 import connectToDB from "../lib/config/db";
 import User from "../lib/models/user";
 
-// Extend the User interface to include the 'id' field
 interface ExtendedUser extends AdapterUser {
   id: string;
 }

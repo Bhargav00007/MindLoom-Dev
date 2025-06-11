@@ -3,13 +3,14 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
-import { PointerHighlight } from "../components/ui/pointer-highlight";
-
 import { SiGithub, SiLinkedin, SiOnlyfans, SiInstagram } from "react-icons/si";
+import { PointerHighlight } from "../components/ui/pointer-highlight";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
   const { data: session } = useSession();
+  const router = useRouter();
 
   return (
     <div className="flex flex-col items-center justify-center mt-20 px-4 text-center">
@@ -31,12 +32,14 @@ const Dashboard = () => {
           <p className="text-lg lg:text-xl font-medium text-gray-700 mb-4">
             {session.user?.email}
           </p>
+
           <button
             onClick={() => signOut()}
             className="px-6 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-all"
           >
             Sign Out
           </button>
+
           <Link
             href="/Home"
             className="underline text-blue-500 hover:text-blue-700 mt-4"
@@ -46,7 +49,7 @@ const Dashboard = () => {
         </>
       ) : (
         <>
-          <div className="mx-10 lg:mx-auto max-w-lg lg:pb-10 pb-7 -mt-10   text-2xl  font-bold tracking-tight md:text-4xl">
+          <div className="mx-10 lg:mx-auto max-w-lg lg:pb-10 pb-7 -mt-10 text-2xl font-bold tracking-tight md:text-4xl">
             Welcome to
             <PointerHighlight
               rectangleClassName="bg-neutral-400 border-neutral-400"
@@ -81,12 +84,13 @@ const Dashboard = () => {
             </button>
 
             <button
-              onClick={() => signIn("google")}
+              onClick={() => router.push("/onlyfans")}
               className="w-full flex items-center justify-center px-6 py-2 bg-[#00aeef] text-white shadow-md rounded-lg hover:bg-[#00aeef]/80 transition-all"
             >
               <SiOnlyfans className="mr-1" />
               OnlyFans
             </button>
+
             <button
               onClick={() => signIn("instagram")}
               className="w-full flex items-center justify-center px-6 py-2 bg-gradient-to-r from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white shadow-md rounded-lg hover:opacity-90 transition-all"
@@ -94,6 +98,7 @@ const Dashboard = () => {
               <SiInstagram className="mr-2" />
               Instagram
             </button>
+
             <button
               onClick={() => signIn("github")}
               className="w-full flex items-center justify-center px-6 py-2 bg-black text-white shadow-md rounded-lg hover:bg-black/80 transition-all"
