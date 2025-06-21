@@ -7,6 +7,7 @@ import BlogItem from "../../../../components/Blogitem";
 import FollowButton from "../../../../components/FollowButton";
 import Link from "next/link";
 import { useLoading } from "../../../../components/LoadingProvider";
+import { MoonLoader } from "react-spinners";
 
 export default function UserProfilePage() {
   const { id } = useParams();
@@ -28,6 +29,7 @@ export default function UserProfilePage() {
   const [showDrawer, setShowDrawer] = useState(false);
   const [drawerType, setDrawerType] = useState("followers");
   const [drawerUsers, setDrawerUsers] = useState<User[]>([]);
+  const [drawerLoading, setDrawerLoading] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -59,6 +61,7 @@ export default function UserProfilePage() {
         return;
       }
 
+      setDrawerLoading(true);
       const results = await Promise.all(
         ids.map(async (id: string) => {
           try {
@@ -70,8 +73,8 @@ export default function UserProfilePage() {
           }
         })
       );
-
       setDrawerUsers(results.filter(Boolean) as User[]);
+      setDrawerLoading(false);
     };
 
     if (showDrawer) fetchDrawerUsers();
@@ -182,13 +185,15 @@ export default function UserProfilePage() {
                 ✕
               </button>
             </div>
-            <div className="space-y-4">
-              {drawerUsers.length > 0 ? (
+            <div className="min-h-[100px] flex flex-col items-center justify-center space-y-4">
+              {drawerLoading ? (
+                <MoonLoader color="#333" size={30} />
+              ) : drawerUsers.length > 0 ? (
                 drawerUsers.map((u) => (
                   <Link
                     href={`/profile/${u._id}`}
                     key={u._id}
-                    className="flex items-center gap-3 hover:bg-gray-100 p-2 rounded"
+                    className="flex items-center gap-3 hover:bg-gray-100 p-2 rounded w-full"
                   >
                     <img
                       src={u.image || "/profileimage.jpg"}
