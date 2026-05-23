@@ -1,8 +1,10 @@
 import { cn } from "../../lib/utils";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { IconUpload } from "@tabler/icons-react";
+import { IconUpload, IconX } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
+
+const STORAGE_KEY = "mindloom_blog_draft";
 
 const mainVariant = {
   initial: {
@@ -33,9 +35,88 @@ export const FileUpload = ({
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    onChange && onChange(newFiles);
+  // LOAD IMAGE FROM LOCAL STORAGE
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+
+    if (savedDraft) {
+      const parsedDraft = JSON.parse(savedDraft);
+
+      if (parsedDraft.thumbnailPreview) {
+        const dummyFile = new File([""], "Saved Image", {
+          type: "image/png",
+        });
+
+        Object.defineProperty(dummyFile, "preview", {
+          value: parsedDraft.thumbnailPreview,
+        });
+
+        setFiles([dummyFile]);
+      }
+    }
+  }, []);
+
+  const handleFileChange = async (newFiles: File[]) => {
+    const file = newFiles[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      const base64 = reader.result as string;
+
+      // SAVE IMAGE TO LOCAL STORAGE
+      const savedDraft = localStorage.getItem(STORAGE_KEY);
+
+      let draftData = {};
+
+      if (savedDraft) {
+        draftData = JSON.parse(savedDraft);
+      }
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          ...draftData,
+          thumbnailPreview: base64,
+        }),
+      );
+
+      Object.defineProperty(file, "preview", {
+        value: base64,
+      });
+
+      setFiles([file]);
+
+      onChange && onChange([file]);
+    };
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    const updatedFiles = files.filter((_, index) => index !== indexToRemove);
+
+    setFiles(updatedFiles);
+
+    onChange && onChange(updatedFiles);
+
+    // REMOVE IMAGE FROM LOCAL STORAGE
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+
+    if (savedDraft) {
+      const parsedDraft = JSON.parse(savedDraft);
+
+      parsedDraft.thumbnailPreview = "";
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsedDraft));
+    }
+
+    // RESET INPUT
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleClick = () => {
@@ -65,27 +146,43 @@ export const FileUpload = ({
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />
+
         <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
           <GridPattern />
         </div>
+
         <div className="flex flex-col items-center justify-center">
           <p className="relative z-20 font-sans font-bold text-neutral-300 text-base">
             Upload Thumbnail Image
           </p>
+
           <p className="relative z-20 font-sans font-normal text-neutral-400 text-base mt-2">
             Drag or drop your files here or click to upload
           </p>
+
           <div className="relative w-full mt-10 max-w-xl mx-auto">
             {files.length > 0 &&
-              files.map((file, idx) => (
+              files.map((file: any, idx) => (
                 <motion.div
                   key={"file" + idx}
                   layoutId={idx === 0 ? "file-upload" : "file-upload-" + idx}
                   className={cn(
                     "relative overflow-hidden z-40 bg-neutral-900 flex flex-col items-start justify-start md:h-24 p-4 mt-4 w-full mx-auto rounded-md",
-                    "shadow-sm"
+                    "shadow-sm",
                   )}
                 >
+                  {/* CROSS BUTTON */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile(idx);
+                    }}
+                    className="absolute top-2 right-2 z-50 bg-neutral-800 hover:bg-red-500 transition-all duration-200 rounded-full p-1"
+                  >
+                    <IconX className="h-4 w-4 text-white" />
+                  </button>
+
                   <div className="flex justify-between w-full items-center gap-4">
                     <motion.p
                       initial={{ opacity: 0 }}
@@ -95,13 +192,16 @@ export const FileUpload = ({
                     >
                       {file.name}
                     </motion.p>
+
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       layout
                       className="rounded-lg px-2 py-1 w-fit shrink-0 text-sm text-neutral-600 bg-neutral-800 text-white shadow-input"
                     >
-                      {(file.size / (1024 * 1024)).toFixed(2)} MB
+                      {file.size
+                        ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+                        : "Saved Draft"}
                     </motion.p>
                   </div>
 
@@ -110,9 +210,9 @@ export const FileUpload = ({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       layout
-                      className="px-1 py-0.5 rounded-md bg-neutral-800 "
+                      className="px-1 py-0.5 rounded-md bg-neutral-800"
                     >
-                      {file.type}
+                      {file.type || "image/png"}
                     </motion.p>
 
                     <motion.p
@@ -120,12 +220,16 @@ export const FileUpload = ({
                       animate={{ opacity: 1 }}
                       layout
                     >
-                      modified{" "}
-                      {new Date(file.lastModified).toLocaleDateString()}
+                      {file.lastModified
+                        ? `modified ${new Date(
+                            file.lastModified,
+                          ).toLocaleDateString()}`
+                        : "Saved Draft"}
                     </motion.p>
                   </div>
                 </motion.div>
               ))}
+
             {!files.length && (
               <motion.div
                 layoutId="file-upload"
@@ -137,7 +241,7 @@ export const FileUpload = ({
                 }}
                 className={cn(
                   "relative group-hover/file:shadow-2xl z-40 bg-neutral-900 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md",
-                  "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]"
+                  "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]",
                 )}
               >
                 {isDragActive ? (
@@ -147,7 +251,7 @@ export const FileUpload = ({
                     className="text-neutral-600 flex flex-col items-center"
                   >
                     Drop it
-                    <IconUpload className="h-4 w-4 =text-neutral-400" />
+                    <IconUpload className="h-4 w-4 text-neutral-400" />
                   </motion.p>
                 ) : (
                   <IconUpload className="h-4 w-4 text-neutral-300" />
@@ -159,7 +263,7 @@ export const FileUpload = ({
               <motion.div
                 variants={secondaryVariant}
                 className="absolute opacity-0 border border-dashed border-sky-400 inset-0 z-30 bg-transparent flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md"
-              ></motion.div>
+              />
             )}
           </div>
         </div>
@@ -171,11 +275,13 @@ export const FileUpload = ({
 export function GridPattern() {
   const columns = 41;
   const rows = 11;
+
   return (
-    <div className="flex bg-neutral-900 shrink-0 flex-wrap justify-center items-center gap-x-px gap-y-px  scale-105">
+    <div className="flex bg-neutral-900 shrink-0 flex-wrap justify-center items-center gap-x-px gap-y-px scale-105">
       {Array.from({ length: rows }).map((_, row) =>
         Array.from({ length: columns }).map((_, col) => {
           const index = row * columns + col;
+
           return (
             <div
               key={`${col}-${row}`}
@@ -186,7 +292,7 @@ export function GridPattern() {
               }`}
             />
           );
-        })
+        }),
       )}
     </div>
   );
