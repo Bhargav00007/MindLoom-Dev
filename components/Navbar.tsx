@@ -87,7 +87,15 @@ export const Navbar = () => {
                         href="/create"
                         className="block px-4 py-2 hover:bg-gray-600"
                       >
-                        Create
+                        Create Blog
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/edit"
+                        className="block px-4 py-2 hover:bg-gray-600"
+                      >
+                        Edit Blog
                       </Link>
                     </li>
                     <li>
@@ -95,7 +103,7 @@ export const Navbar = () => {
                         href="/delete"
                         className="block px-4 py-2 hover:bg-gray-600"
                       >
-                        Delete
+                        Delete Blog
                       </Link>
                     </li>
                     <li>

@@ -4,8 +4,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+
   images: {
-    domains: ["lh3.googleusercontent.com"], // ✅ allow Google profile pics
+    domains: ["lh3.googleusercontent.com", "res.cloudinary.com"],
   },
 };
 

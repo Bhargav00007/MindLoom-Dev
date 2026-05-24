@@ -29,7 +29,7 @@ interface BlogResponse {
 
 // ✅ CREATE BLOG (POST)
 export async function POST(
-  request: Request
+  request: Request,
 ): Promise<NextResponse<BlogResponse>> {
   try {
     const session = await getServerSession();
@@ -40,7 +40,7 @@ export async function POST(
           message: "Unauthorized",
           errorCode: "UNAUTHORIZED",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -62,7 +62,7 @@ export async function POST(
           message: `Missing required fields: ${missingFields.join(", ")}`,
           errorCode: "MISSING_FIELDS",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -74,7 +74,7 @@ export async function POST(
           message: "User not found",
           errorCode: "USER_NOT_FOUND",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -115,7 +115,7 @@ export async function POST(
         errorCode: "SERVER_ERROR",
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -137,7 +137,7 @@ export async function GET(): Promise<NextResponse<BlogResponse>> {
           _id: blog._id.toString(),
           commentCount,
         };
-      })
+      }),
     );
 
     return NextResponse.json({
@@ -153,14 +153,99 @@ export async function GET(): Promise<NextResponse<BlogResponse>> {
         errorCode: "SERVER_ERROR",
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
+    );
+  }
+}
+
+// ✅ EDIT BLOG (PUT)
+export async function PUT(
+  request: Request,
+): Promise<NextResponse<BlogResponse>> {
+  try {
+    const session = await getServerSession();
+
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        { status: 401 },
+      );
+    }
+
+    await connectDB();
+
+    const body = await request.json();
+
+    const { blogId, title, description, category, imagePath } = body;
+
+    const user = await UserModel.findOne({
+      email: session.user.email,
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "User not found",
+        },
+        { status: 404 },
+      );
+    }
+
+    const blog = await BlogModel.findById(blogId);
+
+    if (!blog) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Blog not found",
+        },
+        { status: 404 },
+      );
+    }
+
+    // OWNER CHECK
+    if (blog.authorId.toString() !== user._id.toString()) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "You can only edit your own blogs",
+        },
+        { status: 403 },
+      );
+    }
+
+    blog.title = title;
+    blog.description = description;
+    blog.category = category;
+    blog.imagePath = imagePath;
+
+    await blog.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "Blog updated successfully",
+      data: blog,
+    });
+  } catch (error) {
+    console.error("Edit blog error:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
     );
   }
 }
 
 // ✅ DELETE BLOG
 export async function DELETE(
-  request: Request
+  request: Request,
 ): Promise<NextResponse<BlogResponse>> {
   try {
     const session = await getServerSession();
@@ -171,7 +256,7 @@ export async function DELETE(
           message: "Unauthorized",
           errorCode: "UNAUTHORIZED",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -186,7 +271,7 @@ export async function DELETE(
           message: "Blog ID is required",
           errorCode: "MISSING_BLOG_ID",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -198,7 +283,7 @@ export async function DELETE(
           message: "Blog not found",
           errorCode: "BLOG_NOT_FOUND",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -210,7 +295,7 @@ export async function DELETE(
           message: "Forbidden: You can't delete this blog",
           errorCode: "FORBIDDEN",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -229,7 +314,7 @@ export async function DELETE(
         errorCode: "SERVER_ERROR",
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
