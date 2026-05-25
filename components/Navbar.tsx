@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NotificationBell } from "./NotificationBell";
 
 export const Navbar = () => {
   const { data: session } = useSession();
@@ -11,6 +12,7 @@ export const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
@@ -18,7 +20,7 @@ export const Navbar = () => {
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
-  // Scroll show/hide effect
+  // Scroll show/hide effect for navbar
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -30,6 +32,36 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // Close dropdown on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isDropdownOpen) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isDropdownOpen]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Check if user is admin (only for bhargav.pattanayak@gmail.com)
+  const isAdmin = session?.user?.email === "bhargav.pattanayak@gmail.com";
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 bg-black transition-transform duration-300 ${
@@ -39,17 +71,19 @@ export const Navbar = () => {
       <div className="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between p-4">
         {/* Logo + Brand */}
         <Link href="/" className="flex items-center">
-          {/* <img src="/logo.png" alt="logo" className="h-8 w-8 mr-2" /> */}
           <span className="text-2xl font-semibold text-white font-poppins">
             MindLoom
           </span>
         </Link>
 
-        {/* Avatar & Hamburger wrapper */}
-        <div className="flex items-center space-x-3 md:space-x-0 md:order-2">
+        {/* Avatar, Notification Bell & Hamburger wrapper */}
+        <div className="flex items-center space-x-3 md:space-x-4 md:order-2">
+          {/* Notification Bell - Only show when logged in */}
+          {session && <NotificationBell />}
+
           {/* Avatar or Sign in */}
           {session ? (
-            <div className="order-1 md:order-2 relative">
+            <div className="order-1 md:order-2 relative" ref={dropdownRef}>
               <button
                 onClick={toggleDropdown}
                 className="flex rounded-full bg-gray-800 h-10 w-10 overflow-hidden border-2 border-black"
@@ -78,14 +112,16 @@ export const Navbar = () => {
                       <Link
                         href={`/profile/${session.user.id}`}
                         className="block px-4 py-2 hover:bg-gray-600"
+                        onClick={() => setIsDropdownOpen(false)}
                       >
-                        Profile
+                        Your Profile
                       </Link>
                     </li>
                     <li>
                       <Link
                         href="/create"
                         className="block px-4 py-2 hover:bg-gray-600"
+                        onClick={() => setIsDropdownOpen(false)}
                       >
                         Create Blog
                       </Link>
@@ -94,6 +130,7 @@ export const Navbar = () => {
                       <Link
                         href="/edit"
                         className="block px-4 py-2 hover:bg-gray-600"
+                        onClick={() => setIsDropdownOpen(false)}
                       >
                         Edit Blog
                       </Link>
@@ -102,13 +139,29 @@ export const Navbar = () => {
                       <Link
                         href="/delete"
                         className="block px-4 py-2 hover:bg-gray-600"
+                        onClick={() => setIsDropdownOpen(false)}
                       >
                         Delete Blog
                       </Link>
                     </li>
+                    {/* Admin only option */}
+                    {isAdmin && (
+                      <li>
+                        <Link
+                          href="/send-notification"
+                          className="block px-4 py-2 hover:bg-gray-600 text-yellow-400"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          Send Notification
+                        </Link>
+                      </li>
+                    )}
                     <li>
                       <button
-                        onClick={() => signOut()}
+                        onClick={() => {
+                          signOut();
+                          setIsDropdownOpen(false);
+                        }}
                         className="w-full text-left px-4 py-2 hover:bg-gray-600 mb-2"
                       >
                         Sign Out
@@ -156,7 +209,7 @@ export const Navbar = () => {
             isMobileMenuOpen ? "block mt-4" : "hidden"
           }`}
         >
-          <ul className="flex flex-col md:flex-row md:mt-0 mt-4 space-y-2 space-x-7  md:space-y-0 text-white font-medium">
+          <ul className="flex flex-col md:flex-row md:mt-0 mt-4 space-y-2 space-x-7 md:space-y-0 text-white font-medium">
             {[
               { href: "/Home", label: "Home" },
               { href: "/about", label: "About" },
